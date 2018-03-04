@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ImageView.h
 //  r_view
 //
 //  Created by Lawrence Kesteloot on 3/3/18.
@@ -8,9 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ViewController : NSViewController
+@interface ImageView : NSView
 
+@property (nonatomic) float zoom;
 @property (nonatomic) NSImage *image;
 
 @end
-

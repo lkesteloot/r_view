@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ImageView.h"
 
 @implementation ViewController
 
@@ -16,12 +17,18 @@
     // Do any additional setup after loading the view.
 }
 
-
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
 
     // Update the view, if already loaded.
+
+    // XXX what is this?
 }
 
+- (void)setImage:(NSImage *)image {
+    _image = image;
+    ImageView *imageView = (ImageView *) self.view;
+    imageView.image = image;
+}
 
 @end

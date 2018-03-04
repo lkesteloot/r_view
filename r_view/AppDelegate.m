@@ -3,10 +3,11 @@
 //  r_view
 //
 //  Created by Lawrence Kesteloot on 3/3/18.
-//  Copyright © 2018 Team Ten. All rights reserved.
+//  Copyright © 2018 Lawrence Kesteloot. All rights reserved.
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
 
 @interface AppDelegate ()
 
@@ -15,6 +16,8 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
+
     // Parse command-line parameters.
     NSArray *args = [[NSProcessInfo processInfo] arguments];
 
@@ -34,13 +37,9 @@
             NSLog(@"Image to show: %@", pathname);
             NSImage *image = [[NSImage alloc] initWithContentsOfFile:pathname];
             NSLog(@"Image: %@", image);
+            vc.image = image;
         }
     }
 }
-
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
-    // Insert code here to tear down your application
-}
-
 
 @end

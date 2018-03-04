@@ -65,7 +65,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "foo.ppm"
+            argument = "/Users/lk/mine/r_view/foo.png"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

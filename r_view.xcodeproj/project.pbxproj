@@ -12,6 +12,7 @@
 		4AAFF86D204B911300C13D3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFF86C204B911300C13D3D /* Assets.xcassets */; };
 		4AAFF870204B911300C13D3D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFF86E204B911300C13D3D /* Main.storyboard */; };
 		4AAFF873204B911300C13D3D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF872204B911300C13D3D /* main.m */; };
+		4AAFF87C204BAE7600C13D3D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF87B204BAE7600C13D3D /* ImageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,8 @@
 		4AAFF871204B911300C13D3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4AAFF872204B911300C13D3D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4AAFF874204B911300C13D3D /* r_view.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = r_view.entitlements; sourceTree = "<group>"; };
+		4AAFF87A204BAE7600C13D3D /* ImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
+		4AAFF87B204BAE7600C13D3D /* ImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +69,8 @@
 				4AAFF871204B911300C13D3D /* Info.plist */,
 				4AAFF872204B911300C13D3D /* main.m */,
 				4AAFF874204B911300C13D3D /* r_view.entitlements */,
+				4AAFF87A204BAE7600C13D3D /* ImageView.h */,
+				4AAFF87B204BAE7600C13D3D /* ImageView.m */,
 			);
 			path = r_view;
 			sourceTree = "<group>";
@@ -145,6 +150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AAFF87C204BAE7600C13D3D /* ImageView.m in Sources */,
 				4AAFF86B204B911300C13D3D /* ViewController.m in Sources */,
 				4AAFF873204B911300C13D3D /* main.m in Sources */,
 				4AAFF868204B911300C13D3D /* AppDelegate.m in Sources */,
