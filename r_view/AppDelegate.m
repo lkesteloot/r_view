@@ -42,4 +42,20 @@
     }
 }
 
+- (IBAction)onActualSize:(id)sender {
+}
+
+- (IBAction)onZoomToFit:(id)sender {
+}
+
+- (IBAction)onZoomIn:(id)sender {
+    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
+    [vc zoomIn];
+}
+
+- (IBAction)onZoomOut:(id)sender {
+    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
+    [vc zoomOut];
+}
+
 @end

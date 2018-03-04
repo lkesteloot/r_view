@@ -12,5 +12,8 @@
 
 @property (nonatomic) NSImage *image;
 
+- (void)zoomIn;
+- (void)zoomOut;
+
 @end
 

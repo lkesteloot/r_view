@@ -9,12 +9,18 @@
 #import "ViewController.h"
 #import "ImageView.h"
 
+@interface ViewController () {
+    ImageView *_imageView;
+}
+
+@end
+
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // Do any additional setup after loading the view.
+    _imageView = (ImageView *) self.view;
 }
 
 - (void)setRepresentedObject:(id)representedObject {
@@ -27,8 +33,19 @@
 
 - (void)setImage:(NSImage *)image {
     _image = image;
-    ImageView *imageView = (ImageView *) self.view;
-    imageView.image = image;
+    _imageView.image = image;
+}
+
+- (void)zoomIn {
+    if (_imageView.zoom < 16) {
+        _imageView.zoom *= 2;
+    }
+}
+
+- (void)zoomOut {
+    if (_imageView.zoom > 0.0625) {
+        _imageView.zoom /= 2;
+    }
 }
 
 @end
