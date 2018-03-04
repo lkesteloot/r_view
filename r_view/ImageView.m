@@ -10,6 +10,7 @@
 
 @interface ImageView () {
     NSPoint _origin;
+    NSPoint _initialOrigin;
     BOOL _panning;
     NSTouch *_initialTouch[2];
     NSTouch *_currentTouch[2];
@@ -47,7 +48,6 @@
         NSRect rect;
 
         rect.origin = _origin;
-        NSLog(@"Origin = %g %g\n", rect.origin.x, rect.origin.y);
         rect.size = _image.size;
         rect.size.width *= _zoom;
         rect.size.height *= _zoom;
@@ -83,7 +83,6 @@
 
 - (void)touchesBeganWithEvent:(NSEvent *)event {
     NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
-    NSLog(@"began count = %d", (int) touches.count);
     if (touches.count == 2) {
         if (!_panning) {
             NSArray *array = [touches allObjects];
@@ -91,6 +90,7 @@
             _initialTouch[1] = [array objectAtIndex:1];
             _currentTouch[0] = _initialTouch[0];
             _currentTouch[1] = _initialTouch[1];
+            _initialOrigin = _origin;
             _panning = YES;
         }
     } else {
@@ -100,7 +100,6 @@
 
 - (void)touchesMovedWithEvent:(NSEvent *)event {
     NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
-    NSLog(@"moved count = %d", (int) touches.count);
     if (touches.count == 2) {
         if (_panning) {
             NSArray *array = [touches allObjects];
@@ -120,10 +119,16 @@
             CGFloat cy = (_currentTouch[0].normalizedPosition.y + _currentTouch[1].normalizedPosition.y)/2;
 
             // Update pan.
-            NSLog(@"Update: %g %g -> %g %g", ix, iy, cx, cy);
-            _origin.x += (cx - ix)*10;
-            _origin.y += (cy - iy)*10;
-            [self setNeedsDisplay:YES];
+            CGFloat dx = (cx - ix)*700;
+            CGFloat dy = (cy - iy)*700;
+            // NSLog(@"Update: %g %g -> %g %g (%g %g)", ix, iy, cx, cy, dx, dy);
+            _origin.x = _initialOrigin.x + dx;
+            _origin.y = _initialOrigin.y + dy;
+
+            // Don't redraw right away, wait a bit so that we can collapse touch events.
+            [NSTimer scheduledTimerWithTimeInterval:0.01 repeats:NO block:^(NSTimer * _Nonnull timer) {
+                [self setNeedsDisplay:YES];
+            }];
         }
     } else {
         _panning = NO;
