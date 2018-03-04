@@ -15,7 +15,26 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
+    // Parse command-line parameters.
+    NSArray *args = [[NSProcessInfo processInfo] arguments];
+
+    // Skip name of command.
+    NSLog(@"Full path: %@", [args objectAtIndex:0]);
+
+    // The rest are filenames.
+    for (int i = 1; i < args.count; i++) {
+        // Skip "-NSDocumentRevisionsDebugMode YES", supplied by XCode.
+        if (i + 1 < args.count &&
+            [[args objectAtIndex:i] isEqualToString:@"-NSDocumentRevisionsDebugMode"] &&
+            [[args objectAtIndex:i + 1] isEqualToString:@"YES"]) {
+
+            i += 1;
+        } else {
+            NSLog(@"Image to show: %@", [args objectAtIndex:i]);
+        }
+    }
+
+
 }
 
 
