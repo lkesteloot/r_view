@@ -30,13 +30,13 @@
 
             i += 1;
         } else {
-            NSLog(@"Image to show: %@", [args objectAtIndex:i]);
+            NSString *pathname = [args objectAtIndex:i];
+            NSLog(@"Image to show: %@", pathname);
+            NSImage *image = [[NSImage alloc] initWithContentsOfFile:pathname];
+            NSLog(@"Image: %@", image);
         }
     }
-
-
 }
-
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     // Insert code here to tear down your application
