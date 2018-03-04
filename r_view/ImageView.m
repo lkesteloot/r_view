@@ -10,6 +10,9 @@
 
 @interface ImageView () {
     NSPoint _origin;
+    BOOL _panning;
+    NSTouch *_initialTouch[2];
+    NSTouch *_currentTouch[2];
 }
 
 @end
@@ -22,6 +25,7 @@
     _zoom = 0.25f;
     _origin.x = 0;
     _origin.y = 0;
+    _panning = NO;
 
     // So we can do two-finger pan.
     [self setAcceptsTouchEvents:YES];
@@ -43,6 +47,7 @@
         NSRect rect;
 
         rect.origin = _origin;
+        NSLog(@"Origin = %g %g\n", rect.origin.x, rect.origin.y);
         rect.size = _image.size;
         rect.size.width *= _zoom;
         rect.size.height *= _zoom;
@@ -77,22 +82,60 @@
 }
 
 - (void)touchesBeganWithEvent:(NSEvent *)event {
-    NSLog(@"began: %@", event);
+    NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
+    NSLog(@"began count = %d", (int) touches.count);
+    if (touches.count == 2) {
+        if (!_panning) {
+            NSArray *array = [touches allObjects];
+            _initialTouch[0] = [array objectAtIndex:0];
+            _initialTouch[1] = [array objectAtIndex:1];
+            _currentTouch[0] = _initialTouch[0];
+            _currentTouch[1] = _initialTouch[1];
+            _panning = YES;
+        }
+    } else {
+        _panning = NO;
+    }
 }
 
 - (void)touchesMovedWithEvent:(NSEvent *)event {
-    NSLog(@"moved: %@", event);
+    NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
+    NSLog(@"moved count = %d", (int) touches.count);
+    if (touches.count == 2) {
+        if (_panning) {
+            NSArray *array = [touches allObjects];
+            _currentTouch[0] = [array objectAtIndex:0];
+            _currentTouch[1] = [array objectAtIndex:1];
 
+            // Swap if necessary.
+            if ([_currentTouch[0] isEqual:_initialTouch[1]]) {
+                _currentTouch[0] = [array objectAtIndex:1];
+                _currentTouch[1] = [array objectAtIndex:0];
+            }
+
+            // Compute distance.
+            CGFloat ix = (_initialTouch[0].normalizedPosition.x + _initialTouch[1].normalizedPosition.x)/2;
+            CGFloat iy = (_initialTouch[0].normalizedPosition.y + _initialTouch[1].normalizedPosition.y)/2;
+            CGFloat cx = (_currentTouch[0].normalizedPosition.x + _currentTouch[1].normalizedPosition.x)/2;
+            CGFloat cy = (_currentTouch[0].normalizedPosition.y + _currentTouch[1].normalizedPosition.y)/2;
+
+            // Update pan.
+            NSLog(@"Update: %g %g -> %g %g", ix, iy, cx, cy);
+            _origin.x += (cx - ix)*10;
+            _origin.y += (cy - iy)*10;
+            [self setNeedsDisplay:YES];
+        }
+    } else {
+        _panning = NO;
+    }
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event {
-    NSLog(@"ended: %@", event);
-
+    _panning = NO;
 }
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event {
-    NSLog(@"cancelled: %@", event);
-
+    _panning = NO;
 }
 
 - (void)setImage:(NSImage *)image {
