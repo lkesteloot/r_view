@@ -4,6 +4,8 @@ Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
+Zoom to Fit hotkey should include ESC.
+Fit window to image (as displayed)?
 Handle Zoom to Fit.
 Handle Actual Size.
 When zooming, keep center of screen at center.
@@ -14,4 +16,9 @@ Handle opening a file in the Finder.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
 Handle dropping images onto UI.
 Handle pasting an image (Command-V).
+Page tabs for each image?
+Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
+Automatic and instant reload of changed file on disk.
+After reload, can toggle displaying current and previous.
+Update title immediately on load.
 

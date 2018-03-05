@@ -10,6 +10,7 @@
 
 @interface Image () {
     int _stride;
+    int _bytesPerPixel;
     uint8_t *_data;
 }
 
@@ -67,10 +68,11 @@
             NSLog(@"We do not handle %d bits per sample", (int) bitmapRep.bitsPerSample);
             return nil;
         }
-        if (/* bitmapRep.bitsPerPixel != 24 && */ bitmapRep.bitsPerPixel != 32) {
+        if (bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
             NSLog(@"We do not handle %d bits per pixel formats", (int) bitmapRep.bitsPerPixel);
             return nil;
         }
+        _bytesPerPixel = (int) bitmapRep.bitsPerPixel/8;
         if (bitmapRep.planar) {
             NSLog(@"We do not handle planar formats");
             return nil;
@@ -87,7 +89,7 @@
             return nil;
         }
 
-        // We should now be RGBA 8-bit format.
+        // We should now be RGB or RGBA 8-bit format.
 
         NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
               (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
@@ -107,12 +109,12 @@
         return NO;
     }
 
-    uint8_t *pixel = &_data[y*_stride + x*4];
+    uint8_t *pixel = &_data[y*_stride + x*_bytesPerPixel];
 
     *red = pixel[0];
     *green = pixel[1];
     *blue = pixel[2];
-    *alpha = pixel[3];
+    *alpha = _bytesPerPixel == 4 ? pixel[3] : 255;
 
     return YES;
 }
