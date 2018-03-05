@@ -1,0 +1,68 @@
+#!/usr/bin/python
+
+# Make our icon procedurally.
+
+import sys
+from PIL import Image
+
+RAINBOW = [
+        (200, 20, 20),
+        (255, 127, 0),
+        (240, 240, 0),
+        (20, 200, 20),
+        (20, 20, 255),
+        (75, 20, 130),
+        (148, 0, 211),
+]
+
+def make_icon(pathname):
+    width = 1024
+    height = 1024
+    padding = 20
+    margin = 80
+    tile_size = (width - 2*margin - padding) / len(RAINBOW)
+
+    pixels = []
+
+    for y in range(height):
+        for x in range(width):
+            if x < margin or y < margin or x >= width - margin or y >= height - margin:
+                # Outside margins.
+                color = (0, 0, 0, 0)
+            else:
+                internal_x = x - margin
+                internal_y = y - margin
+
+                tile_x = internal_x/tile_size
+                tile_y = internal_y/tile_size
+
+                tile_offset_x = internal_x - tile_x*tile_size
+                tile_offset_y = internal_y - tile_y*tile_size
+
+                # See if we're in the padding.
+                if tile_x >= len(RAINBOW) or tile_offset_x < padding or \
+                        tile_y >= len(RAINBOW) or tile_offset_y < padding:
+
+                    # Internal padding.
+                    color = (255, 255, 255, 255)
+                else:
+                    # Colored tiles.
+                    index = (tile_x + tile_y) % len(RAINBOW)
+                    color = RAINBOW[index] + (255,)
+
+            pixels.append(color)
+
+    image = Image.new("RGBA", (width, height))
+    image.putdata(pixels)
+    image.save(pathname)
+
+def main():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: %s out.png\n" % (sys.argv[0],))
+        sys.exit(1)
+
+    pathname = sys.argv[1]
+    make_icon(pathname)
+
+if __name__ == "__main__":
+    main()
