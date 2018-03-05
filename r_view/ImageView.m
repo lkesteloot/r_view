@@ -48,19 +48,19 @@
         NSRect rect;
 
         rect.origin = _origin;
-        rect.size = _image.size;
+        rect.size = _image.nsImage.size;
         rect.size.width *= _zoom;
         rect.size.height *= _zoom;
 
         NSDictionary *hints = @{
                                 NSImageHintInterpolation: [NSNumber numberWithInt:_zoom >= 1 ? NSImageInterpolationNone : NSImageInterpolationHigh]
                                 };
-        [_image drawInRect:rect
-                  fromRect:NSZeroRect
-                 operation:NSCompositingOperationSourceOver
-                  fraction:1.0f
-            respectFlipped:YES
-                     hints:hints];
+        [_image.nsImage drawInRect:rect
+                          fromRect:NSZeroRect
+                         operation:NSCompositingOperationSourceOver
+                          fraction:1.0f
+                    respectFlipped:YES
+                             hints:hints];
     }
 
     [NSGraphicsContext restoreGraphicsState];
@@ -68,6 +68,11 @@
 
 // So that we can get key events.
 - (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+// Make origin in upper-left.
+- (BOOL)isFlipped {
     return YES;
 }
 
@@ -79,6 +84,14 @@
             NSLog(@"keyDown: %d", [event keyCode]);
             break;
     }
+}
+
+- (void)mouseDown:(NSEvent *)event {
+    [self updateColorPicker:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event {
+    [self updateColorPicker:event];
 }
 
 - (void)touchesBeganWithEvent:(NSEvent *)event {
@@ -123,7 +136,7 @@
             CGFloat dy = (cy - iy)*700;
             // NSLog(@"Update: %g %g -> %g %g (%g %g)", ix, iy, cx, cy, dx, dy);
             _origin.x = _initialOrigin.x + dx;
-            _origin.y = _initialOrigin.y + dy;
+            _origin.y = _initialOrigin.y - dy; // We're flipped.
 
             // Don't redraw right away, wait a bit so that we can collapse touch events.
             [NSTimer scheduledTimerWithTimeInterval:0.01 repeats:NO block:^(NSTimer * _Nonnull timer) {
@@ -143,7 +156,7 @@
     _panning = NO;
 }
 
-- (void)setImage:(NSImage *)image {
+- (void)setImage:(Image *)image {
     _image = image;
     [self setNeedsDisplay:YES];
 }
@@ -151,6 +164,24 @@
 - (void)setZoom:(float)zoom {
     _zoom = zoom;
     [self setNeedsDisplay:YES];
+}
+
+- (void)updateColorPicker:(NSEvent *)event {
+    // Convert to view coordinates.
+    NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
+
+    // Convert to image coordinates.
+    CGFloat x = (point.x - _origin.x)/_zoom;
+    CGFloat y = (point.y - _origin.y)/_zoom;
+
+    uint8_t red, green, blue, alpha;
+
+    BOOL success = [_image getRed:&red green:&green blue:&blue alpha:&alpha atX:x y:y];
+    if (success) {
+        NSLog(@"Color picker at: %g %g (%d %d %d %d)", x, y, red, green, blue, alpha);
+    } else {
+        NSLog(@"Outside image");
+    }
 }
 
 @end

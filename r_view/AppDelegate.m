@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "Image.h"
 
 @interface AppDelegate ()
 
@@ -16,8 +17,6 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
-
     // Parse command-line parameters.
     NSArray *args = [[NSProcessInfo processInfo] arguments];
 
@@ -35,9 +34,15 @@
         } else {
             NSString *pathname = [args objectAtIndex:i];
             NSLog(@"Image to show: %@", pathname);
-            NSImage *image = [[NSImage alloc] initWithContentsOfFile:pathname];
-            NSLog(@"Image: %@", image);
-            vc.image = image;
+            NSImage *nsImage = [[NSImage alloc] initWithContentsOfFile:pathname];
+            NSLog(@"Image: %@", nsImage);
+            Image *image = [[Image alloc] initFromNsImage:nsImage];
+            if (image == nil) {
+                NSLog(@"Cannot convert image to our own type");
+                return;
+            }
+            [self getImageVc].image = image;
+
         }
     }
 }
@@ -49,13 +54,17 @@
 }
 
 - (IBAction)onZoomIn:(id)sender {
-    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
-    [vc zoomIn];
+    [[self getImageVc] zoomIn];
 }
 
 - (IBAction)onZoomOut:(id)sender {
-    ViewController *vc = (ViewController *) [NSApplication sharedApplication].keyWindow.contentViewController;
-    [vc zoomOut];
+    [[self getImageVc] zoomOut];
+}
+
+- (ViewController *)getImageVc {
+    // We might not yet have a key window, so get the first window.
+    NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
+    return (ViewController *) mainWindow.contentViewController;
 }
 
 @end

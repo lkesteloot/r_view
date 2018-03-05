@@ -31,7 +31,7 @@
     // XXX what is this?
 }
 
-- (void)setImage:(NSImage *)image {
+- (void)setImage:(Image *)image {
     _image = image;
     _imageView.image = image;
 }

@@ -8,9 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "Image.h"
+
 @interface ViewController : NSViewController
 
-@property (nonatomic) NSImage *image;
+@property (nonatomic) Image *image;
 
 - (void)zoomIn;
 - (void)zoomOut;

@@ -1,8 +1,16 @@
 
+Show RGBA and XY when clicking on pixel.
+Handle Command-C to copy #RRGGBB.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Handle Zoom to Fit.
 Handle Actual Size.
 When zooming, keep center of screen at center.
+Add inertia to two-finger pan.
 Handle two-finger pan.
+Draw against checkerboard if semi-transparent.
+Handle opening a file in the Finder.
+    Probably have to register image types.
+    https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
+Handle dropping images onto UI.
 
