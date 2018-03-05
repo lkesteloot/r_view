@@ -10,8 +10,15 @@
 
 #import "Image.h"
 
+@protocol ImageViewDelegate
+
+- (void)userSelectedPointX:(int)x y:(int)y;
+
+@end
+
 @interface ImageView : NSView
 
+@property (nonatomic) id<ImageViewDelegate> delegate;
 @property (nonatomic) float zoom;
 @property (nonatomic) Image *image;
 

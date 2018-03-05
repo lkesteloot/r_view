@@ -10,8 +10,15 @@
 
 #import "Image.h"
 
+@protocol ViewControllerDelegate
+
+- (void)updateZoom:(float)zoom picker:(uint32_t)color;
+
+@end
+
 @interface ViewController : NSViewController
 
+@property (nonatomic) id<ViewControllerDelegate> delegate;
 @property (nonatomic) Image *image;
 
 - (void)zoomIn;

@@ -10,13 +10,17 @@
 #import "ViewController.h"
 #import "Image.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <ViewControllerDelegate> {
+    Image *_image;
+}
 
 @end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [self getImageVc].delegate = self;
+
     // Parse command-line parameters.
     NSArray *args = [[NSProcessInfo processInfo] arguments];
 
@@ -33,15 +37,12 @@
             i += 1;
         } else {
             NSString *pathname = [args objectAtIndex:i];
-            NSLog(@"Image to show: %@", pathname);
-            NSImage *nsImage = [[NSImage alloc] initWithContentsOfFile:pathname];
-            NSLog(@"Image: %@", nsImage);
-            Image *image = [[Image alloc] initFromNsImage:nsImage];
-            if (image == nil) {
+            _image = [[Image alloc] initFromPathname:pathname];
+            if (_image == nil) {
                 NSLog(@"Cannot convert image to our own type");
                 return;
             }
-            [self getImageVc].image = image;
+            [self getImageVc].image = _image;
 
         }
     }
@@ -65,6 +66,29 @@
     // We might not yet have a key window, so get the first window.
     NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
     return (ViewController *) mainWindow.contentViewController;
+}
+
+// ViewControllerDelegate
+- (void)updateZoom:(float)zoom picker:(uint32_t)color {
+    NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
+
+    NSString *filename = [_image.pathname lastPathComponent];
+    int zoomNumerator;
+    int zoomDenominator;
+    if (zoom >= 1) {
+        zoomNumerator = (int) zoom;
+        zoomDenominator = 1;
+    } else {
+        zoomNumerator = 1;
+        zoomDenominator = (int) 1.0/zoom;
+    }
+
+    mainWindow.title = [NSString stringWithFormat:@"%@ (zoom %d:%d, color %d, %d, %d, %06X)",
+                        filename, zoomNumerator, zoomDenominator,
+                        (color >> 16) & 0xFF,
+                        (color >> 8) & 0xFF,
+                        (color >> 0) & 0xFF,
+                        color];
 }
 
 @end

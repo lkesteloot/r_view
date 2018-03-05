@@ -9,8 +9,6 @@
 #import "Image.h"
 
 @interface Image () {
-    int _width;
-    int _height;
     int _stride;
     uint8_t *_data;
 }
@@ -19,10 +17,15 @@
 
 @implementation Image
 
-- (id)initFromNsImage:(NSImage *)nsImage {
+- (id)initFromPathname:(NSString *)pathname {
     self = [super init];
 
     if (self) {
+        _pathname = pathname;
+
+        NSImage *nsImage = [[NSImage alloc] initWithContentsOfFile:pathname];
+        NSLog(@"Image: %@", nsImage);
+
         _nsImage = nsImage;
 
         // First, grab the raw pixels before we draw this image. As soon as an image is

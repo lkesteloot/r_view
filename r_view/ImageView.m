@@ -171,16 +171,11 @@
     NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
 
     // Convert to image coordinates.
-    CGFloat x = (point.x - _origin.x)/_zoom;
-    CGFloat y = (point.y - _origin.y)/_zoom;
+    int x = (int) ((point.x - _origin.x)/_zoom);
+    int y = (int) ((point.y - _origin.y)/_zoom);
 
-    uint8_t red, green, blue, alpha;
-
-    BOOL success = [_image getRed:&red green:&green blue:&blue alpha:&alpha atX:x y:y];
-    if (success) {
-        NSLog(@"Color picker at: %g %g (%d %d %d %d)", x, y, red, green, blue, alpha);
-    } else {
-        NSLog(@"Outside image");
+    if (_delegate != nil && x >= 0 && y >= 0 && x < _image.width && y < _image.height) {
+        [_delegate userSelectedPointX:x y:y];
     }
 }
 
