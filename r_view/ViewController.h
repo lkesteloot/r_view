@@ -22,7 +22,7 @@
 
 @property (nonatomic) id<ViewControllerDelegate> delegate;
 @property (nonatomic) Image *image;
-@property (nonatomic,readonly) ImageView *imageView;
+@property (weak) IBOutlet ImageView *imageView;
 @property (nonatomic,readonly) PickedColor *pickedColor;
 
 - (void)zoomIn;

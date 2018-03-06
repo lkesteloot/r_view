@@ -47,6 +47,7 @@
     if (_image != nil) {
         // Where to draw in the view.
         NSRect rect = [self getImageDisplayRect];
+        //rect = CGRectMake(0, 0, _image.width*_zoom, _image.height*_zoom);
 
         // Checkerboard background.
         if (_image.isSemiTransparent) {
@@ -112,6 +113,7 @@
     [self updateColorPicker:event];
 }
 
+/*
 - (void)touchesBeganWithEvent:(NSEvent *)event {
     NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
     if (touches.count == 2) {
@@ -173,6 +175,7 @@
 - (void)touchesCancelledWithEvent:(NSEvent *)event {
     _panning = NO;
 }
+ */
 
 - (void)setImage:(Image *)image {
     _image = image;
@@ -198,6 +201,13 @@
     // Move origin so that whatever was in the center of the view is still there.
     _origin = CGPointMake(viewCenter.x - imageCenter.x*zoom, viewCenter.y - imageCenter.y*zoom);
 
+    NSScrollView *scrollView = [self enclosingScrollView];
+    if (scrollView == nil) {
+        NSLog(@"Can't find enclosing scroll view");
+    } else {
+        self.frame = [self getImageDisplayRect];
+    }
+
     [self setNeedsDisplay:YES];
 }
 
@@ -219,6 +229,7 @@
     CGRect rect;
 
     rect.origin = _origin;
+    rect.origin = CGPointMake(0, 0);
     rect.size = _image.nsImage.size;
     rect.size.width *= _zoom;
     rect.size.height *= _zoom;

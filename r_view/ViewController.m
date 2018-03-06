@@ -17,7 +17,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _imageView = (ImageView *) self.view;
     _imageView.delegate = self;
 }
 
@@ -32,6 +31,7 @@
 - (void)setImage:(Image *)image {
     _image = image;
     _imageView.image = image;
+    _imageView.frame = CGRectMake(0, 0, image.width, image.height);
 }
 
 - (void)zoomIn {
