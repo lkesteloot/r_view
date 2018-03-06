@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+# Make a test image.
+
+import sys
+from PIL import Image
+
+def make_test_image(pathname):
+    width = 512
+    height = 512
+
+    pixels = []
+
+    for y in range(height):
+        for x in range(width):
+            red = (x / 10 * 10) % 256
+            green = (y / 10 * 10) % 256
+            blue = 0
+            alpha = 255 if x < width*3/4 else 128
+
+            color = (red, green, blue, alpha)
+
+            pixels.append(color)
+
+    image = Image.new("RGBA", (width, height))
+    image.putdata(pixels)
+    image.save(pathname)
+
+def main():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: %s out.png\n" % (sys.argv[0],))
+        sys.exit(1)
+
+    pathname = sys.argv[1]
+    make_test_image(pathname)
+
+if __name__ == "__main__":
+    main()

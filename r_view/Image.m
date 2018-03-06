@@ -85,10 +85,15 @@
                   (int) (_width*bitmapRep.bitsPerPixel/8));
             return nil;
         }
+        _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
+        if (_alphaPremultiplied) {
+            // It's not so much that we don't support them, it's that we've never tried it
+            // and don't know how we should act differently.
+            NSLog(@"We do not handle alpha premultiplied formats");
+            return nil;
+        }
 
         // We should now be RGB or RGBA 8-bit format.
-
-        _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
 
         NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
               (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,

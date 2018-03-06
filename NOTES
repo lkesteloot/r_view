@@ -1,6 +1,4 @@
 
-Handle alpha premultiplied images (and not).
-    Make test image.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
