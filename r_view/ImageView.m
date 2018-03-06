@@ -46,12 +46,7 @@
     // Draw the image.
     if (_image != nil) {
         // Where to draw in the view.
-        NSRect rect;
-
-        rect.origin = _origin;
-        rect.size = _image.nsImage.size;
-        rect.size.width *= _zoom;
-        rect.size.height *= _zoom;
+        NSRect rect = [self getImageDisplayRect];
 
         // Checkerboard background.
         if (_image.isSemiTransparent) {
@@ -185,7 +180,24 @@
 }
 
 - (void)setZoom:(float)zoom {
+    if (zoom == 0) {
+        // Safety.
+        NSLog(@"Can't zoom to zero.");
+        return;
+    }
+
+    // Find center of view.
+    CGPoint viewCenter = CGPointMake(CGRectGetMidX(_bounds), CGRectGetMidY(_bounds));
+
+    // Find point in (original) image that's shown in center of view.
+    CGPoint imageCenter = CGPointMake((viewCenter.x - _origin.x)/_zoom, (viewCenter.y - _origin.y)/_zoom);
+
+    // Update zoom.
     _zoom = zoom;
+
+    // Move origin so that whatever was in the center of the view is still there.
+    _origin = CGPointMake(viewCenter.x - imageCenter.x*zoom, viewCenter.y - imageCenter.y*zoom);
+
     [self setNeedsDisplay:YES];
 }
 
@@ -200,6 +212,18 @@
     if (_delegate != nil && x >= 0 && y >= 0 && x < _image.width && y < _image.height) {
         [_delegate userSelectedPointX:x y:y];
     }
+}
+
+// Where the image is displayed in the view.
+- (CGRect)getImageDisplayRect {
+    CGRect rect;
+
+    rect.origin = _origin;
+    rect.size = _image.nsImage.size;
+    rect.size.width *= _zoom;
+    rect.size.height *= _zoom;
+
+    return rect;
 }
 
 @end
