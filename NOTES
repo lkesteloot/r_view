@@ -1,5 +1,6 @@
 
-Show XY when clicking on pixel.
+Handle alpha premultiplied images (and not).
+    Make test image.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
@@ -17,8 +18,13 @@ Handle opening a file in the Finder.
 Handle dropping images onto UI.
 Handle pasting an image (Command-V).
 Page tabs for each image?
+    https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/TabView/TabView.html
+    Keeps tab zoom and pan in sync.
+    Easy key to swap between them (Space?).
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
+    Don't change zoom or pan.
 After reload, can toggle displaying current and previous.
-Update title immediately on load.
+Update title immediately on initial load.
+Don't let pan move image out of window's center pixel.
 

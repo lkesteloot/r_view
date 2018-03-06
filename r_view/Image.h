@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+#import "PickedColor.h"
+
 @interface Image : NSObject
 
 @property (nonatomic,readonly) NSString *pathname;
@@ -18,7 +20,7 @@
 
 - (id)initFromPathname:(NSString *)pathname;
 
-// Returns whether the point is inside the image.
-- (BOOL)getRed:(uint8_t *)red green:(uint8_t *)green blue:(uint8_t *)blue alpha:(uint8_t *)alpha atX:(int)x y:(int)y;
+// Returns nil if the point is outside the image.
+- (PickedColor *)sampleAtX:(int)x y:(int)y;
 
 @end

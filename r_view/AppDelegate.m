@@ -69,26 +69,46 @@
 }
 
 // ViewControllerDelegate
-- (void)updateZoom:(float)zoom picker:(uint32_t)color {
+- (void)updateZoom:(float)zoom pickedColor:(PickedColor *)pickedColor {
     NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
 
     NSString *filename = [_image.pathname lastPathComponent];
-    int zoomNumerator;
-    int zoomDenominator;
-    if (zoom >= 1) {
-        zoomNumerator = (int) zoom;
-        zoomDenominator = 1;
+
+    NSString *zoomString;
+    if (zoom == 1) {
+        zoomString = nil;
     } else {
-        zoomNumerator = 1;
-        zoomDenominator = (int) 1.0/zoom;
+        int zoomNumerator;
+        int zoomDenominator;
+        if (zoom >= 1) {
+            zoomNumerator = (int) zoom;
+            zoomDenominator = 1;
+        } else {
+            zoomNumerator = 1;
+            zoomDenominator = (int) 1.0/zoom;
+        }
+        zoomString = [NSString stringWithFormat:@"zoom %d:%d", zoomNumerator, zoomDenominator];
     }
 
-    mainWindow.title = [NSString stringWithFormat:@"%@ (zoom %d:%d, color %d, %d, %d, %06X)",
-                        filename, zoomNumerator, zoomDenominator,
-                        (color >> 16) & 0xFF,
-                        (color >> 8) & 0xFF,
-                        (color >> 0) & 0xFF,
-                        color];
+    NSString *pickedColorString = pickedColor == nil ? nil : [pickedColor toString];
+
+    NSString *title = filename;
+
+    if (zoomString != nil || pickedColorString != nil) {
+        title = [title stringByAppendingString:@" – "];
+        if (zoomString != nil) {
+            title = [title stringByAppendingString:zoomString];
+            if (pickedColorString != nil) {
+                title = [title stringByAppendingString:@" – "];
+            }
+        }
+
+        if (pickedColorString != nil) {
+            title = [title stringByAppendingString:pickedColorString];
+        }
+    }
+
+    mainWindow.title = title;
 }
 
 @end

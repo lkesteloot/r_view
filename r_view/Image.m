@@ -11,6 +11,7 @@
 @interface Image () {
     int _stride;
     int _bytesPerPixel;
+    BOOL _alphaPremultiplied;
     uint8_t *_data;
 }
 
@@ -46,10 +47,6 @@
         // Make sure we handle this format.
         if ((bitmapRep.bitmapFormat & NSAlphaFirstBitmapFormat) != 0) {
             NSLog(@"We do not handle alpha-first formats");
-            return nil;
-        }
-        if ((bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) != 0) {
-            NSLog(@"We do not handle alpha non-premultiplied formats");
             return nil;
         }
         if ((bitmapRep.bitmapFormat & NSFloatingPointSamplesBitmapFormat) != 0) {
@@ -91,6 +88,8 @@
 
         // We should now be RGB or RGBA 8-bit format.
 
+        _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
+
         NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
               (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
               _stride, _width);
@@ -104,19 +103,24 @@
     return self;
 }
 
-- (BOOL)getRed:(uint8_t *)red green:(uint8_t *)green blue:(uint8_t *)blue alpha:(uint8_t *)alpha atX:(int)x y:(int)y {
+- (PickedColor *)sampleAtX:(int)x y:(int)y {
     if (x < 0 || y < 0 || x >= _width || y >= _height) {
-        return NO;
+        return nil;
     }
 
     uint8_t *pixel = &_data[y*_stride + x*_bytesPerPixel];
 
-    *red = pixel[0];
-    *green = pixel[1];
-    *blue = pixel[2];
-    *alpha = _bytesPerPixel == 4 ? pixel[3] : 255;
+    PickedColor *pickedColor = [[PickedColor alloc] init];
 
-    return YES;
+    pickedColor.x = x;
+    pickedColor.y = y;
+    pickedColor.red = pixel[0];
+    pickedColor.green = pixel[1];
+    pickedColor.blue = pixel[2];
+    pickedColor.alpha = _bytesPerPixel == 4 ? pixel[3] : 0xFF;
+    pickedColor.hasAlpha = _bytesPerPixel == 4;
+
+    return pickedColor;
 }
 
 @end

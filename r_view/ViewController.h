@@ -12,7 +12,7 @@
 
 @protocol ViewControllerDelegate
 
-- (void)updateZoom:(float)zoom picker:(uint32_t)color;
+- (void)updateZoom:(float)zoom pickedColor:(PickedColor *)pickedColor;
 
 @end
 

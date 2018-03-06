@@ -14,6 +14,7 @@
 		4AAFF873204B911300C13D3D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF872204B911300C13D3D /* main.m */; };
 		4AAFF87C204BAE7600C13D3D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF87B204BAE7600C13D3D /* ImageView.m */; };
 		4AAFF87F204CCA9000C13D3D /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF87E204CCA9000C13D3D /* Image.m */; };
+		4ADBC51D204E2D5E00C45303 /* PickedColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ADBC51C204E2D5E00C45303 /* PickedColor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		4AAFF87B204BAE7600C13D3D /* ImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
 		4AAFF87D204CCA9000C13D3D /* Image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
 		4AAFF87E204CCA9000C13D3D /* Image.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
+		4ADBC51B204E2D5E00C45303 /* PickedColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PickedColor.h; sourceTree = "<group>"; };
+		4ADBC51C204E2D5E00C45303 /* PickedColor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PickedColor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +79,8 @@
 				4AAFF87B204BAE7600C13D3D /* ImageView.m */,
 				4AAFF87D204CCA9000C13D3D /* Image.h */,
 				4AAFF87E204CCA9000C13D3D /* Image.m */,
+				4ADBC51B204E2D5E00C45303 /* PickedColor.h */,
+				4ADBC51C204E2D5E00C45303 /* PickedColor.m */,
 			);
 			path = r_view;
 			sourceTree = "<group>";
@@ -156,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AAFF87C204BAE7600C13D3D /* ImageView.m in Sources */,
+				4ADBC51D204E2D5E00C45303 /* PickedColor.m in Sources */,
 				4AAFF86B204B911300C13D3D /* ViewController.m in Sources */,
 				4AAFF873204B911300C13D3D /* main.m in Sources */,
 				4AAFF868204B911300C13D3D /* AppDelegate.m in Sources */,

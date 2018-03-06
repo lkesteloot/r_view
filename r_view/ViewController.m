@@ -11,7 +11,7 @@
 
 @interface ViewController () <ImageViewDelegate> {
     ImageView *_imageView;
-    uint32_t _pickerColor;
+    PickedColor *_pickedColor;
 }
 
 @end
@@ -55,18 +55,16 @@
 // ImageViewDelegate
 - (void)userSelectedPointX:(int)x y:(int)y {
 
-    uint8_t red, green, blue, alpha;
-
-    BOOL success = [_image getRed:&red green:&green blue:&blue alpha:&alpha atX:x y:y];
-    if (success) {
-        _pickerColor = (red << 16) | (green << 8) | (blue << 0);
+    PickedColor *pickedColor = [_image sampleAtX:x y:y];
+    if (pickedColor != nil) {
+        _pickedColor = pickedColor;
         [self update];
     }
 }
 
 - (void)update {
     if (_delegate != nil) {
-        [_delegate updateZoom:_imageView.zoom picker:_pickerColor];
+        [_delegate updateZoom:_imageView.zoom pickedColor:_pickedColor];
     }
 }
 
