@@ -13,6 +13,7 @@ Handle opening a file in the Finder.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
 Handle dropping images onto UI.
 Handle pasting an image (Command-V).
+Handle opening an image with File->Open.
 Page tabs for each image?
     https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/TabView/TabView.html
     Keeps tab zoom and pan in sync.
@@ -21,7 +22,6 @@ Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
 After reload, can toggle displaying current and previous.
-Update title immediately on initial load.
 Don't let pan move image out of window's center pixel.
 Other programs let you two-finger pan even when the window or program doesn't have focus.
 

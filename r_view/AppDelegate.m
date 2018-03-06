@@ -10,9 +10,7 @@
 #import "ViewController.h"
 #import "Image.h"
 
-@interface AppDelegate () <ViewControllerDelegate> {
-    Image *_image;
-}
+@interface AppDelegate () <ViewControllerDelegate>
 
 @end
 
@@ -37,15 +35,16 @@
             i += 1;
         } else {
             NSString *pathname = [args objectAtIndex:i];
-            _image = [[Image alloc] initFromPathname:pathname];
-            if (_image == nil) {
+            Image *image = [[Image alloc] initFromPathname:pathname];
+            if (image == nil) {
                 NSLog(@"Cannot convert image to our own type");
                 return;
             }
-            [self getImageVc].image = _image;
-
+            [self getImageVc].image = image;
         }
     }
+
+    [self updateWindowTitle];
 }
 
 - (IBAction)onActualSize:(id)sender {
@@ -70,41 +69,54 @@
 
 // ViewControllerDelegate
 - (void)updateZoom:(float)zoom pickedColor:(PickedColor *)pickedColor {
+    [self updateWindowTitle];
+}
+
+- (void)updateWindowTitle {
     NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
+    ViewController *vc = [self getImageVc];
+    Image *image = vc.image;
 
-    NSString *filename = [_image.pathname lastPathComponent];
+    NSString *title = @"r_view";
 
-    NSString *zoomString;
-    if (zoom == 1) {
-        zoomString = nil;
-    } else {
-        int zoomNumerator;
-        int zoomDenominator;
-        if (zoom >= 1) {
-            zoomNumerator = (int) zoom;
-            zoomDenominator = 1;
+    if (image != nil) {
+        NSString *filename = [image.pathname lastPathComponent];
+        if (filename != nil) {
+            title = filename;
+        }
+
+        NSString *zoomString;
+        float zoom = vc.imageView.zoom;
+        if (zoom == 1) {
+            zoomString = nil;
         } else {
-            zoomNumerator = 1;
-            zoomDenominator = (int) 1.0/zoom;
-        }
-        zoomString = [NSString stringWithFormat:@"zoom %d:%d", zoomNumerator, zoomDenominator];
-    }
-
-    NSString *pickedColorString = pickedColor == nil ? nil : [pickedColor toString];
-
-    NSString *title = filename == nil ? @"r_view" : filename;
-
-    if (zoomString != nil || pickedColorString != nil) {
-        title = [title stringByAppendingString:@" – "];
-        if (zoomString != nil) {
-            title = [title stringByAppendingString:zoomString];
-            if (pickedColorString != nil) {
-                title = [title stringByAppendingString:@" – "];
+            int zoomNumerator;
+            int zoomDenominator;
+            if (zoom >= 1) {
+                zoomNumerator = (int) zoom;
+                zoomDenominator = 1;
+            } else {
+                zoomNumerator = 1;
+                zoomDenominator = (int) 1.0/zoom;
             }
+            zoomString = [NSString stringWithFormat:@"zoom %d:%d", zoomNumerator, zoomDenominator];
         }
 
-        if (pickedColorString != nil) {
-            title = [title stringByAppendingString:pickedColorString];
+        PickedColor *pickedColor = vc.pickedColor;
+        NSString *pickedColorString = pickedColor == nil ? nil : [pickedColor toString];
+
+        if (zoomString != nil || pickedColorString != nil) {
+            title = [title stringByAppendingString:@" – "];
+            if (zoomString != nil) {
+                title = [title stringByAppendingString:zoomString];
+                if (pickedColorString != nil) {
+                    title = [title stringByAppendingString:@" – "];
+                }
+            }
+
+            if (pickedColorString != nil) {
+                title = [title stringByAppendingString:pickedColorString];
+            }
         }
     }
 

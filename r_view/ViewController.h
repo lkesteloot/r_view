@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 
 #import "Image.h"
+#import "ImageView.h"
+#import "PickedColor.h"
 
 @protocol ViewControllerDelegate
 
@@ -20,6 +22,8 @@
 
 @property (nonatomic) id<ViewControllerDelegate> delegate;
 @property (nonatomic) Image *image;
+@property (nonatomic,readonly) ImageView *imageView;
+@property (nonatomic,readonly) PickedColor *pickedColor;
 
 - (void)zoomIn;
 - (void)zoomOut;

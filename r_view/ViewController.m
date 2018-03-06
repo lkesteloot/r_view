@@ -7,12 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "ImageView.h"
 
-@interface ViewController () <ImageViewDelegate> {
-    ImageView *_imageView;
-    PickedColor *_pickedColor;
-}
+@interface ViewController () <ImageViewDelegate>
 
 @end
 
@@ -54,7 +50,6 @@
 
 // ImageViewDelegate
 - (void)userSelectedPointX:(int)x y:(int)y {
-
     PickedColor *pickedColor = [_image sampleAtX:x y:y];
     if (pickedColor != nil) {
         _pickedColor = pickedColor;

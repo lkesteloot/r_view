@@ -23,7 +23,7 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
 
-    _zoom = 0.25f;
+    _zoom = 1;
     _origin.x = 0;
     _origin.y = 0;
     _panning = NO;
