@@ -9,7 +9,6 @@ Handle Zoom to Fit.
 Handle Actual Size.
 When zooming, keep center of screen at center.
 Add inertia to two-finger pan.
-Draw against checkerboard if semi-transparent.
 Handle opening a file in the Finder.
     Probably have to register image types.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc

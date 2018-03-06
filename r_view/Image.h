@@ -17,6 +17,8 @@
 @property (nonatomic,readonly) NSImage *nsImage;
 @property (nonatomic,readonly) int width;
 @property (nonatomic,readonly) int height;
+// Has at least one non-opaque pixel:
+@property (nonatomic,readonly) BOOL isSemiTransparent;
 
 - (id)initFromPathname:(NSString *)pathname;
 

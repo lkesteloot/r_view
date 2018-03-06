@@ -65,7 +65,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/lk/mine/r_view/tst.ppm"
+            argument = "/Users/lk/mine/r_view/tst.png"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

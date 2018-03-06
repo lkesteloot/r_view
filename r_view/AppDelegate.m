@@ -92,7 +92,7 @@
 
     NSString *pickedColorString = pickedColor == nil ? nil : [pickedColor toString];
 
-    NSString *title = filename;
+    NSString *title = filename == nil ? @"r_view" : filename;
 
     if (zoomString != nil || pickedColorString != nil) {
         title = [title stringByAppendingString:@" – "];

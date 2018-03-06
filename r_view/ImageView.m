@@ -45,6 +45,7 @@
 
     // Draw the image.
     if (_image != nil) {
+        // Where to draw in the view.
         NSRect rect;
 
         rect.origin = _origin;
@@ -52,6 +53,28 @@
         rect.size.width *= _zoom;
         rect.size.height *= _zoom;
 
+        // Checkerboard background.
+        if (_image.isSemiTransparent) {
+            // One color.
+            [[NSColor whiteColor] set];
+            [NSBezierPath fillRect:rect];
+
+            // Other color.
+            [[NSColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0] set];
+            int tileSize = 8;
+            BOOL indented = NO;
+            CGRect tile = CGRectMake(0, 0, tileSize, tileSize);
+            for (int y = 0; y < rect.size.height; y += tileSize) {
+                tile.origin.y = rect.origin.y + y;
+                for (int x = indented ? tileSize : 0; x < rect.size.width; x += tileSize*2) {
+                    tile.origin.x = rect.origin.x + x;
+                    [NSBezierPath fillRect:CGRectIntersection(tile, rect)];
+                }
+                indented = !indented;
+            }
+        }
+
+        // Draw the image.
         NSDictionary *hints = @{
                                 NSImageHintInterpolation: [NSNumber numberWithInt:_zoom >= 1 ? NSImageInterpolationNone : NSImageInterpolationHigh]
                                 };

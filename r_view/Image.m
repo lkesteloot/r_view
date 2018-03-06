@@ -103,6 +103,21 @@
         int byteCount = _stride*_height;
         _data = (uint8_t *) malloc(byteCount);
         memcpy(_data, bitmapRep.bitmapData, byteCount);
+
+        // See if we're semi-transparent.
+        _isSemiTransparent = NO;
+        if (_bytesPerPixel == 4) {
+            for (int y = 0; y < _height && !_isSemiTransparent; y++) {
+                uint8_t *pixel = &_data[y*_stride];
+                for (int x = 0; x < _width; x++) {
+                    if (pixel[3] != 0xFF) {
+                        _isSemiTransparent = YES;
+                        break;
+                    }
+                    pixel += _bytesPerPixel;
+                }
+            }
+        }
     }
 
     return self;
