@@ -1,4 +1,6 @@
 
+Wrap our view in an NSScrollView.
+On launch, image should be fit to screen, and window fit to zoomed image.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
@@ -12,6 +14,7 @@ Handle opening a file in the Finder.
     Probably have to register image types.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
 Handle dropping images onto UI.
+    https://developer.apple.com/documentation/appkit/nsdraggingdestination?language=objc
 Handle pasting an image (Command-V).
 Handle opening an image with File->Open.
 Page tabs for each image?
@@ -24,4 +27,5 @@ Automatic and instant reload of changed file on disk.
 After reload, can toggle displaying current and previous.
 Don't let pan move image out of window's center pixel.
 Other programs let you two-finger pan even when the window or program doesn't have focus.
+Drawing is slow when zoomed in a lot.
 
