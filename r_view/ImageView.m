@@ -41,6 +41,8 @@
 }
 
 - (void)superviewWasResized:(NSNotification *)notification {
+    // The frame size will be the same, but this forces the centering clip view
+    // to re-center the image.
     [self resetFrame];
 }
 
@@ -49,14 +51,10 @@
 
     [NSGraphicsContext saveGraphicsState];
 
-    // Neutral background.
-    [[NSColor grayColor] set];
-    [NSBezierPath fillRect:dirtyRect];
-
     // Draw the image.
     if (_image != nil) {
         // Where to draw in the view.
-        CGRect rect = [self getDisplayedImageRect];
+        CGRect rect = [self getZoomedImageRect];
 
         // Checkerboard background.
         if (_image.isSemiTransparent) {
@@ -167,18 +165,7 @@
 }
 
 - (void)resetFrame {
-    CGRect frame = [self getZoomedImageRect];
-
-    // Never be smaller than our parent in either dimension.
-    CGRect parentBounds = self.superview.bounds;
-    if (frame.size.width < parentBounds.size.width) {
-        frame.size.width = parentBounds.size.width;
-    }
-    if (frame.size.height < parentBounds.size.height) {
-        frame.size.height = parentBounds.size.height;
-    }
-
-    self.frame = frame;
+    self.frame = [self getZoomedImageRect];
 }
 
 - (void)updateColorPicker:(NSEvent *)event {
@@ -198,21 +185,13 @@
 }
 
 - (CGPoint)toImagePointFromViewPoint:(CGPoint)viewPoint {
-    // Find where we're displaying the image within our view.
-    CGPoint imageOrigin = [self getDisplayedImageRect].origin;
-
     // Convert to image coordinates.
-    return CGPointMake((viewPoint.x - imageOrigin.x)/_zoom,
-                       (viewPoint.y - imageOrigin.y)/_zoom);
+    return CGPointMake(viewPoint.x/_zoom, viewPoint.y/_zoom);
 }
 
 - (CGPoint)toViewPointFromImagePoint:(CGPoint)imagePoint {
-    // Find where we're displaying the image within our view.
-    CGPoint imageOrigin = [self getDisplayedImageRect].origin;
-
     // Convert to view coordinates.
-    return CGPointMake(imagePoint.x*_zoom + imageOrigin.x,
-                       imagePoint.y*_zoom + imageOrigin.y);
+    return CGPointMake(imagePoint.x*_zoom, imagePoint.y*_zoom);
 }
 
 // Size of zoomed image. This is the size of the original image times
@@ -221,7 +200,7 @@
     return CGSizeMake(_image.width*_zoom, _image.height*_zoom);
 }
 
-// The rect of the image, including the zoom but not including any offset.
+// The rect of the image, including the zoom.
 - (CGRect)getZoomedImageRect {
     CGSize displaySize = [self getZoomedImageSize];
 
@@ -229,25 +208,6 @@
     rect.origin.x = 0;
     rect.origin.y = 0;
     rect.size = displaySize;
-
-    return rect;
-}
-
-// Where the image is displayed in the view. The size is the image
-// display size. The offset is usually zero, unless the scroll view is too
-// large, in which case the image is translated so that it's centered.
-- (CGRect)getDisplayedImageRect {
-    CGRect rect = [self getZoomedImageRect];
-
-    // Center in scroll view if we're too small.
-    NSScrollView *scrollView = [self enclosingScrollView];
-    CGSize parentSize = scrollView.bounds.size;
-    if (parentSize.width > rect.size.width) {
-        rect.origin.x = (parentSize.width - rect.size.width)/2;
-    }
-    if (parentSize.height > rect.size.height) {
-        rect.origin.y = (parentSize.height - rect.size.height)/2;
-    }
 
     return rect;
 }

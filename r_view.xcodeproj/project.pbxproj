@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A1D898E205114530087BF1D /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A1D898D205114530087BF1D /* CenteredClipView.m */; };
 		4AAFF868204B911300C13D3D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF867204B911300C13D3D /* AppDelegate.m */; };
 		4AAFF86B204B911300C13D3D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AAFF86A204B911300C13D3D /* ViewController.m */; };
 		4AAFF86D204B911300C13D3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFF86C204B911300C13D3D /* Assets.xcassets */; };
@@ -18,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A1D898C205114530087BF1D /* CenteredClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CenteredClipView.h; sourceTree = "<group>"; };
+		4A1D898D205114530087BF1D /* CenteredClipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CenteredClipView.m; sourceTree = "<group>"; };
 		4AAFF863204B911300C13D3D /* r_view.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = r_view.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AAFF866204B911300C13D3D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		4AAFF867204B911300C13D3D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -81,6 +84,8 @@
 				4AAFF87E204CCA9000C13D3D /* Image.m */,
 				4ADBC51B204E2D5E00C45303 /* PickedColor.h */,
 				4ADBC51C204E2D5E00C45303 /* PickedColor.m */,
+				4A1D898C205114530087BF1D /* CenteredClipView.h */,
+				4A1D898D205114530087BF1D /* CenteredClipView.m */,
 			);
 			path = r_view;
 			sourceTree = "<group>";
@@ -166,6 +171,7 @@
 				4AAFF873204B911300C13D3D /* main.m in Sources */,
 				4AAFF868204B911300C13D3D /* AppDelegate.m in Sources */,
 				4AAFF87F204CCA9000C13D3D /* Image.m in Sources */,
+				4A1D898E205114530087BF1D /* CenteredClipView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,4 @@
 
-Reset frame at start.
 Allow pan more freedom, as long as center of view always has image in it.
 On launch, image should be fit to screen, and window fit to zoomed image.
 Handle Command-C to copy #RRGGBB.

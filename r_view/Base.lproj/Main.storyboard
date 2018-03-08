@@ -299,7 +299,7 @@
                     <scrollView key="view" wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="5or-Jg-a4E">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <clipView key="contentView" id="BfI-h7-cFC">
+                        <clipView key="contentView" id="BfI-h7-cFC" customClass="CenteredClipView">
                             <rect key="frame" x="1" y="1" width="433" height="283"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -308,6 +308,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </subviews>
+                            <color key="backgroundColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="7Nv-63-lyi">
                             <rect key="frame" x="1" y="284" width="433" height="15"/>
