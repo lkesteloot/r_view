@@ -1,8 +1,5 @@
 
 Reset frame at start.
-Don't let pan move image out of window's center pixel.
-Other programs let you two-finger pan even when the window or program doesn't have focus.
-Mouse clicking no longer picks color.
 Allow pan more freedom, as long as center of view always has image in it.
 On launch, image should be fit to screen, and window fit to zoomed image.
 Handle Command-C to copy #RRGGBB.
