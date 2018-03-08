@@ -8,30 +8,40 @@
 
 #import "ImageView.h"
 
-@interface ImageView () {
-    NSPoint _origin;
-    NSPoint _initialOrigin;
-    BOOL _panning;
-    NSTouch *_initialTouch[2];
-    NSTouch *_currentTouch[2];
-}
-
-@end
-
 @implementation ImageView
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
 
-    _zoom = 1;
-    _origin.x = 0;
-    _origin.y = 0;
-    _panning = NO;
+    if (self) {
+        _zoom = 1;
 
-    // So we can do two-finger pan.
-    [self setAcceptsTouchEvents:YES];
+    }
 
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewWillMoveToSuperview:(NSView *)newSuperview {
+    // Stop listening to size changes of our old superview.
+    if (self.superview != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSViewFrameDidChangeNotification object:self.superview];
+    }
+}
+
+- (void)viewDidMoveToSuperview {
+    // Listen for changes to the superview size so we can
+    // adapt ours.
+    [self.superview setPostsFrameChangedNotifications:YES];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(superviewWasResized:) name:NSViewFrameDidChangeNotification object:self.superview];
+    [self resetFrame];
+}
+
+- (void)superviewWasResized:(NSNotification *)notification {
+    [self resetFrame];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -46,8 +56,7 @@
     // Draw the image.
     if (_image != nil) {
         // Where to draw in the view.
-        NSRect rect = [self getImageDisplayRect];
-        //rect = CGRectMake(0, 0, _image.width*_zoom, _image.height*_zoom);
+        CGRect rect = [self getDisplayedImageRect];
 
         // Checkerboard background.
         if (_image.isSemiTransparent) {
@@ -113,72 +122,9 @@
     [self updateColorPicker:event];
 }
 
-/*
-- (void)touchesBeganWithEvent:(NSEvent *)event {
-    NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
-    if (touches.count == 2) {
-        if (!_panning) {
-            NSArray *array = [touches allObjects];
-            _initialTouch[0] = [array objectAtIndex:0];
-            _initialTouch[1] = [array objectAtIndex:1];
-            _currentTouch[0] = _initialTouch[0];
-            _currentTouch[1] = _initialTouch[1];
-            _initialOrigin = _origin;
-            _panning = YES;
-        }
-    } else {
-        _panning = NO;
-    }
-}
-
-- (void)touchesMovedWithEvent:(NSEvent *)event {
-    NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
-    if (touches.count == 2) {
-        if (_panning) {
-            NSArray *array = [touches allObjects];
-            _currentTouch[0] = [array objectAtIndex:0];
-            _currentTouch[1] = [array objectAtIndex:1];
-
-            // Swap if necessary.
-            if ([_currentTouch[0] isEqual:_initialTouch[1]]) {
-                _currentTouch[0] = [array objectAtIndex:1];
-                _currentTouch[1] = [array objectAtIndex:0];
-            }
-
-            // Compute distance.
-            CGFloat ix = (_initialTouch[0].normalizedPosition.x + _initialTouch[1].normalizedPosition.x)/2;
-            CGFloat iy = (_initialTouch[0].normalizedPosition.y + _initialTouch[1].normalizedPosition.y)/2;
-            CGFloat cx = (_currentTouch[0].normalizedPosition.x + _currentTouch[1].normalizedPosition.x)/2;
-            CGFloat cy = (_currentTouch[0].normalizedPosition.y + _currentTouch[1].normalizedPosition.y)/2;
-
-            // Update pan.
-            CGFloat dx = (cx - ix)*700;
-            CGFloat dy = (cy - iy)*700;
-            // NSLog(@"Update: %g %g -> %g %g (%g %g)", ix, iy, cx, cy, dx, dy);
-            _origin.x = _initialOrigin.x + dx;
-            _origin.y = _initialOrigin.y - dy; // We're flipped.
-
-            // Don't redraw right away, wait a bit so that we can collapse touch events.
-            [NSTimer scheduledTimerWithTimeInterval:0.01 repeats:NO block:^(NSTimer * _Nonnull timer) {
-                [self setNeedsDisplay:YES];
-            }];
-        }
-    } else {
-        _panning = NO;
-    }
-}
-
-- (void)touchesEndedWithEvent:(NSEvent *)event {
-    _panning = NO;
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event {
-    _panning = NO;
-}
- */
-
 - (void)setImage:(Image *)image {
     _image = image;
+    [self resetFrame];
     [self setNeedsDisplay:YES];
 }
 
@@ -189,50 +135,119 @@
         return;
     }
 
-    // Find center of view.
-    CGPoint viewCenter = CGPointMake(CGRectGetMidX(_bounds), CGRectGetMidY(_bounds));
+    // Find center of parent view.
+    NSScrollView *scrollView = [self enclosingScrollView];
+    CGSize parentSize = scrollView.bounds.size;
+    CGPoint parentViewCenter = CGPointMake(parentSize.width/2, parentSize.height/2);
 
-    // Find point in (original) image that's shown in center of view.
-    CGPoint imageCenter = CGPointMake((viewCenter.x - _origin.x)/_zoom, (viewCenter.y - _origin.y)/_zoom);
+    // Convert to our own view.
+    NSPoint viewCenter = [self convertPoint:parentViewCenter fromView:scrollView];
+
+    // Find view center in image.
+    CGPoint viewCenterInImage = [self toImagePointFromViewPoint:viewCenter];
 
     // Update zoom.
     _zoom = zoom;
 
-    // Move origin so that whatever was in the center of the view is still there.
-    _origin = CGPointMake(viewCenter.x - imageCenter.x*zoom, viewCenter.y - imageCenter.y*zoom);
+    // Add background if necessary.
+    [self resetFrame];
 
-    NSScrollView *scrollView = [self enclosingScrollView];
-    if (scrollView == nil) {
-        NSLog(@"Can't find enclosing scroll view");
-    } else {
-        self.frame = [self getImageDisplayRect];
-    }
+    // Move back to new view center.
+    CGPoint newViewCenter = [self toViewPointFromImagePoint:viewCenterInImage];
+
+    // New view origin. This is a point in our own view that we want to display
+    // in the upper-left.
+    CGPoint newViewOrigin = CGPointMake(newViewCenter.x - parentViewCenter.x,
+                                        newViewCenter.y - parentViewCenter.y);
+
+    // Scroll there.
+    [self scrollPoint:newViewOrigin];
 
     [self setNeedsDisplay:YES];
 }
 
+- (void)resetFrame {
+    CGRect frame = [self getZoomedImageRect];
+
+    // Never be smaller than our parent in either dimension.
+    CGRect parentBounds = self.superview.bounds;
+    if (frame.size.width < parentBounds.size.width) {
+        frame.size.width = parentBounds.size.width;
+    }
+    if (frame.size.height < parentBounds.size.height) {
+        frame.size.height = parentBounds.size.height;
+    }
+
+    self.frame = frame;
+}
+
 - (void)updateColorPicker:(NSEvent *)event {
     // Convert to view coordinates.
-    NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
+    NSPoint viewPoint = [self convertPoint:[event locationInWindow] fromView:nil];
 
     // Convert to image coordinates.
-    int x = (int) ((point.x - _origin.x)/_zoom);
-    int y = (int) ((point.y - _origin.y)/_zoom);
+    CGPoint imagePoint = [self toImagePointFromViewPoint:viewPoint];
+
+    // Convert to integer.
+    int x = (int) (imagePoint.x + 0.5);
+    int y = (int) (imagePoint.y + 0.5);
 
     if (_delegate != nil && x >= 0 && y >= 0 && x < _image.width && y < _image.height) {
         [_delegate userSelectedPointX:x y:y];
     }
 }
 
-// Where the image is displayed in the view.
-- (CGRect)getImageDisplayRect {
-    CGRect rect;
+- (CGPoint)toImagePointFromViewPoint:(CGPoint)viewPoint {
+    // Find where we're displaying the image within our view.
+    CGPoint imageOrigin = [self getDisplayedImageRect].origin;
 
-    rect.origin = _origin;
-    rect.origin = CGPointMake(0, 0);
-    rect.size = _image.nsImage.size;
-    rect.size.width *= _zoom;
-    rect.size.height *= _zoom;
+    // Convert to image coordinates.
+    return CGPointMake((viewPoint.x - imageOrigin.x)/_zoom,
+                       (viewPoint.y - imageOrigin.y)/_zoom);
+}
+
+- (CGPoint)toViewPointFromImagePoint:(CGPoint)imagePoint {
+    // Find where we're displaying the image within our view.
+    CGPoint imageOrigin = [self getDisplayedImageRect].origin;
+
+    // Convert to view coordinates.
+    return CGPointMake(imagePoint.x*_zoom + imageOrigin.x,
+                       imagePoint.y*_zoom + imageOrigin.y);
+}
+
+// Size of zoomed image. This is the size of the original image times
+// the zoom.
+- (CGSize)getZoomedImageSize {
+    return CGSizeMake(_image.width*_zoom, _image.height*_zoom);
+}
+
+// The rect of the image, including the zoom but not including any offset.
+- (CGRect)getZoomedImageRect {
+    CGSize displaySize = [self getZoomedImageSize];
+
+    CGRect rect;
+    rect.origin.x = 0;
+    rect.origin.y = 0;
+    rect.size = displaySize;
+
+    return rect;
+}
+
+// Where the image is displayed in the view. The size is the image
+// display size. The offset is usually zero, unless the scroll view is too
+// large, in which case the image is translated so that it's centered.
+- (CGRect)getDisplayedImageRect {
+    CGRect rect = [self getZoomedImageRect];
+
+    // Center in scroll view if we're too small.
+    NSScrollView *scrollView = [self enclosingScrollView];
+    CGSize parentSize = scrollView.bounds.size;
+    if (parentSize.width > rect.size.width) {
+        rect.origin.x = (parentSize.width - rect.size.width)/2;
+    }
+    if (parentSize.height > rect.size.height) {
+        rect.origin.y = (parentSize.height - rect.size.height)/2;
+    }
 
     return rect;
 }
