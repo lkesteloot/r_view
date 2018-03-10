@@ -175,9 +175,9 @@
     // Convert to image coordinates.
     CGPoint imagePoint = [self toImagePointFromViewPoint:viewPoint];
 
-    // Convert to integer.
-    int x = (int) (imagePoint.x + 0.5);
-    int y = (int) (imagePoint.y + 0.5);
+    // Convert to integer. Always round down.
+    int x = (int) imagePoint.x;
+    int y = (int) imagePoint.y;
 
     if (_delegate != nil && x >= 0 && y >= 0 && x < _image.width && y < _image.height) {
         [_delegate userSelectedPointX:x y:y];
