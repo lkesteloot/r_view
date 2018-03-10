@@ -1,5 +1,4 @@
 
-Allow pan more freedom, as long as center of view always has image in it.
 On launch, image should be fit to screen, and window fit to zoomed image.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
@@ -9,7 +8,6 @@ Zoom to Fit hotkey should include ESC.
 Fit window to image (as displayed)?
 Handle Zoom to Fit.
 Handle Actual Size.
-Add inertia to two-finger pan.
 Handle opening a file in the Finder.
     Probably have to register image types.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
@@ -24,8 +22,9 @@ Page tabs for each image?
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
-After reload, can toggle displaying current and previous.
-Drawing is slow when zoomed in a lot.
-    Maybe only draw the rect that's required by the drawing call.
+    After reload, can toggle displaying current and previous.
 Clean up menu items, including Preferences.
 
+Maybe:
+
+Allow pan more freedom, as long as center of view always has image in it.

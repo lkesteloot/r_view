@@ -60,16 +60,21 @@
         if (_image.isSemiTransparent) {
             // One color.
             [[NSColor whiteColor] set];
-            [NSBezierPath fillRect:rect];
+            [NSBezierPath fillRect:dirtyRect];
 
             // Other color.
             [[NSColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0] set];
-            int tileSize = 8;
+            int tileSize = 8; // Must be power of two.
+            int tileMask = tileSize - 1;
+            int x1 = (int) dirtyRect.origin.x & ~tileMask;
+            int x2 = (int) dirtyRect.origin.x + dirtyRect.size.width;
+            int y1 = (int) dirtyRect.origin.y & ~tileMask;
+            int y2 = (int) dirtyRect.origin.y + dirtyRect.size.height;
             BOOL indented = NO;
             CGRect tile = CGRectMake(0, 0, tileSize, tileSize);
-            for (int y = 0; y < rect.size.height; y += tileSize) {
+            for (int y = y1; y <= y2; y += tileSize) {
                 tile.origin.y = rect.origin.y + y;
-                for (int x = indented ? tileSize : 0; x < rect.size.width; x += tileSize*2) {
+                for (int x = x1 + (indented ? tileSize : 0); x <= x2; x += tileSize*2) {
                     tile.origin.x = rect.origin.x + x;
                     [NSBezierPath fillRect:CGRectIntersection(tile, rect)];
                 }
