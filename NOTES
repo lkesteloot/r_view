@@ -5,8 +5,6 @@ Handle Command-C to copy #RRGGBB.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Zoom to Fit hotkey should include ESC.
-Handle Zoom to Fit.
-Handle Actual Size.
 Handle opening a file in the Finder.
     Probably have to register image types.
     https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc

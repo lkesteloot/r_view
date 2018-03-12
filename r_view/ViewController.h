@@ -29,6 +29,7 @@
 - (void)zoomIn;
 - (void)zoomOut;
 - (void)findBestZoomForSize:(CGSize)size;
+- (void)resetZoom;
 
 @end
 

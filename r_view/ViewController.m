@@ -40,6 +40,11 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     _imageView.frame = CGRectMake(0, 0, image.width, image.height);
 }
 
+- (void)resetZoom {
+    _imageView.zoom = 1;
+    [self update];
+}
+
 - (void)findBestZoomForSize:(CGSize)size {
     // Start with largest zoom and work backwards until it fits.
     float zoom = LARGEST_ZOOM;

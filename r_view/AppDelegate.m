@@ -91,9 +91,11 @@
 }
 
 - (IBAction)onActualSize:(id)sender {
+    [[self getImageVc] resetZoom];
 }
 
 - (IBAction)onZoomToFit:(id)sender {
+    [[self getImageVc] findBestZoomForSize:[self getMainWindow].frame.size];;
 }
 
 - (IBAction)onZoomIn:(id)sender {
