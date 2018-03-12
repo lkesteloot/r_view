@@ -26,9 +26,22 @@
         s = [s stringByAppendingFormat:@",%d", (int) _alpha];
     }
 
-    s = [s stringByAppendingFormat:@") #%06X", self.rgb];
+    s = [s stringByAppendingString:@") #"];
+    s = [s stringByAppendingString:[self toRgbString]];
 
     return s;
+}
+
+- (NSString *)toRgbString {
+    return [NSString stringWithFormat:@"%06X", self.rgb];
+}
+
+- (NSColor *)toNsColor {
+    // Not sure this is the best way to convert integer to float.
+    return [NSColor colorWithRed:_red/255.0
+                           green:_green/255.0
+                            blue:_blue/255.0
+                           alpha:_hasAlpha ? _alpha/255.0 : 1.0f];
 }
 
 @end

@@ -1,6 +1,7 @@
 
 Handle Command-C to copy #RRGGBB.
-    Should it copy image instead?
+    Test pasting color.
+    Disable menu item if no color is picked.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Zoom to Fit hotkey should include ESC.
@@ -20,6 +21,7 @@ Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
     After reload, can toggle displaying current and previous.
+        Create pseudo-file, like another tab?
 Clean up menu items, including Preferences.
 Write README.md.
 

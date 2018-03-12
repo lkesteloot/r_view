@@ -114,6 +114,25 @@
     [[self getImageVc] zoomOut];
 }
 
+- (IBAction)onColorCopy:(id)sender {
+    ViewController *vc = [self getImageVc];
+    PickedColor *pickedColor = vc.pickedColor;
+
+    if (pickedColor != nil) {
+        NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+
+        [pasteboard clearContents];
+        NSArray *objectsToCopy = @[
+                                   [pickedColor toRgbString],
+                                   [pickedColor toNsColor]   // Untested.
+                                   ];
+        BOOL success = [pasteboard writeObjects:objectsToCopy];
+        if (!success) {
+            NSLog(@"Failed to copy color to pasteboard");
+        }
+    }
+}
+
 - (NSWindow *)getMainWindow {
     // We might not yet have a key window, so get the first window.
     return [[[NSApplication sharedApplication] windows] objectAtIndex:0];

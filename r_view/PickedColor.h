@@ -6,7 +6,7 @@
 //  Copyright © 2018 Team Ten. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 @interface PickedColor : NSObject
 
@@ -21,5 +21,7 @@
 @property (nonatomic,readonly) uint32_t rgba;
 
 - (NSString *)toString;
+- (NSString *)toRgbString;
+- (NSColor *)toNsColor;
 
 @end
