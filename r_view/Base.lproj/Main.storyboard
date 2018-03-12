@@ -321,6 +321,7 @@
                     </scrollView>
                     <connections>
                         <outlet property="imageView" destination="jYb-3f-Wsp" id="Wqf-ug-cZk"/>
+                        <outlet property="scrollView" destination="5or-Jg-a4E" id="Sy3-s2-fl9"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

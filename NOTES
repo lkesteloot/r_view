@@ -1,11 +1,9 @@
 
-On launch, image should be fit to screen, and window fit to zoomed image.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Zoom to Fit hotkey should include ESC.
-Fit window to image (as displayed)?
 Handle Zoom to Fit.
 Handle Actual Size.
 Handle opening a file in the Finder.
@@ -19,11 +17,13 @@ Page tabs for each image?
     https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/TabView/TabView.html
     Keeps tab zoom and pan in sync.
     Easy key to swap between them (Space?).
+    See tab hotkeys in Window menu.
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
     After reload, can toggle displaying current and previous.
 Clean up menu items, including Preferences.
+Write README.md.
 
 Maybe:
 

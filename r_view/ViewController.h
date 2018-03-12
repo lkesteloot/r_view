@@ -22,11 +22,13 @@
 
 @property (nonatomic) id<ViewControllerDelegate> delegate;
 @property (nonatomic) Image *image;
+@property (strong) IBOutlet NSScrollView *scrollView;
 @property (weak) IBOutlet ImageView *imageView;
 @property (nonatomic,readonly) PickedColor *pickedColor;
 
 - (void)zoomIn;
 - (void)zoomOut;
+- (void)findBestZoomForSize:(CGSize)size;
 
 @end
 

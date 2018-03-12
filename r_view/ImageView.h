@@ -22,4 +22,6 @@
 @property (nonatomic) float zoom;
 @property (nonatomic) Image *image;
 
+- (CGRect)getZoomedImageRect;
+
 @end
