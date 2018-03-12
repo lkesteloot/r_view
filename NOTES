@@ -1,4 +1,5 @@
 
+Handle missing file.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".

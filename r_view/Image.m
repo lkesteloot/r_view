@@ -85,8 +85,9 @@
                   (int) (_width*bitmapRep.bitsPerPixel/8));
             return nil;
         }
+
         _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
-        if (_alphaPremultiplied) {
+        if (_alphaPremultiplied && bitmapRep.samplesPerPixel == 4) {
             // It's not so much that we don't support them, it's that we've never tried it
             // and don't know how we should act differently.
             NSLog(@"We do not handle alpha premultiplied formats");
