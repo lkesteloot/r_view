@@ -19,13 +19,13 @@
 
 @implementation Image
 
-- (id)initFromPathname:(NSString *)pathname {
+- (id)initFromData:(NSData *)data andPathname:(NSString *)pathname {
     self = [super init];
 
     if (self) {
         _pathname = pathname;
 
-        NSImage *nsImage = [[NSImage alloc] initWithContentsOfFile:pathname];
+        NSImage *nsImage = [[NSImage alloc] initWithData:data];
         NSLog(@"Image: %@", nsImage);
 
         _nsImage = nsImage;

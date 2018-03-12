@@ -1,5 +1,4 @@
 
-Handle missing file.
 Handle Command-C to copy #RRGGBB.
     Should it copy image instead?
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
@@ -13,7 +12,7 @@ Handle dropping images onto UI.
 Handle pasting an image (Command-V).
 Handle opening an image with File->Open.
 Page tabs for each image?
-    https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/TabView/TabView.html
+    https://github.com/onekiloparsec/KPCTabsControl
     Keeps tab zoom and pan in sync.
     Easy key to swap between them (Space?).
     See tab hotkeys in Window menu.

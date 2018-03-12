@@ -20,7 +20,7 @@
 // Has at least one non-opaque pixel:
 @property (nonatomic,readonly) BOOL isSemiTransparent;
 
-- (id)initFromPathname:(NSString *)pathname;
+- (id)initFromData:(NSData *)data andPathname:(NSString *)pathname;
 
 // Returns nil if the point is outside the image.
 - (PickedColor *)sampleAtX:(int)x y:(int)y;

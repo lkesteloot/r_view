@@ -26,14 +26,6 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     _imageView.delegate = self;
 }
 
-- (void)setRepresentedObject:(id)representedObject {
-    [super setRepresentedObject:representedObject];
-
-    // Update the view, if already loaded.
-
-    // XXX what is this?
-}
-
 - (void)setImage:(Image *)image {
     _image = image;
     _imageView.image = image;

@@ -37,18 +37,26 @@
             i += 1;
         } else {
             NSString *pathname = [args objectAtIndex:i];
-            Image *image = [[Image alloc] initFromPathname:pathname];
-            if (image == nil) {
-                NSLog(@"Cannot convert image to our own type");
-                return;
+            NSData *data = [[NSFileManager defaultManager] contentsAtPath:pathname];
+            if (data == nil) {
+                // File doesn't exist or can't be read.
+                NSLog(@"Cannot read file %@", pathname);
+            } else {
+                Image *image = [[Image alloc] initFromData:data andPathname:pathname];
+                if (image == nil) {
+                    NSLog(@"Cannot convert image to our own type");
+                } else {
+                    [self getImageVc].image = image;
+                    mainImage = image;
+                }
             }
-            [self getImageVc].image = image;
-            mainImage = image;
         }
     }
 
     // Find the best size for our window.
-    if (mainImage != nil) {
+    if (mainImage == nil) {
+        [NSApp terminate:self];
+    } else {
         // Get the window we'll be displaying.
         NSWindow *window = [self getMainWindow];
 
