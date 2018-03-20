@@ -9,6 +9,9 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>jpeg</string>
+				<string>ppm</string>
+				<string>jpg</string>
 				<string>png</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
