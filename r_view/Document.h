@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  Document.h
 //  r_view
 //
 //  Created by Lawrence Kesteloot on 3/19/18.
@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ViewController : NSViewController
+@interface Document : NSDocument
 
 
 @end

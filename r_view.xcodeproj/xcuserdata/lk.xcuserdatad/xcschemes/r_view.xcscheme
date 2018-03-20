@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4AAFF862204B911300C13D3D"
+               BlueprintIdentifier = "4AE250632060CE730023B1C8"
                BuildableName = "r_view.app"
                BlueprintName = "r_view"
                ReferencedContainer = "container:r_view.xcodeproj">
@@ -33,7 +33,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4AAFF862204B911300C13D3D"
+            BlueprintIdentifier = "4AE250632060CE730023B1C8"
             BuildableName = "r_view.app"
             BlueprintName = "r_view"
             ReferencedContainer = "container:r_view.xcodeproj">
@@ -57,7 +57,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4AAFF862204B911300C13D3D"
+            BlueprintIdentifier = "4AE250632060CE730023B1C8"
             BuildableName = "r_view.app"
             BlueprintName = "r_view"
             ReferencedContainer = "container:r_view.xcodeproj">
@@ -82,7 +82,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4AAFF862204B911300C13D3D"
+            BlueprintIdentifier = "4AE250632060CE730023B1C8"
             BuildableName = "r_view.app"
             BlueprintName = "r_view"
             ReferencedContainer = "container:r_view.xcodeproj">
