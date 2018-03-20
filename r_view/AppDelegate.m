@@ -28,6 +28,7 @@
 
     // The rest are filenames.
     Image *mainImage = nil;
+    /*
     for (int i = 1; i < args.count; i++) {
         // Skip "-NSDocumentRevisionsDebugMode YES", supplied by XCode.
         if (i + 1 < args.count &&
@@ -51,8 +52,9 @@
                 }
             }
         }
-    }
+    }*/
 
+    /*
     // Find the best size for our window.
     if (mainImage == nil) {
         [NSApp terminate:self];
@@ -96,6 +98,7 @@
     }
 
     [self updateWindowTitle];
+     */
 }
 
 - (IBAction)onActualSize:(id)sender {
@@ -155,7 +158,7 @@
     NSString *title = @"r_view";
 
     if (image != nil) {
-        NSString *filename = [image.pathname lastPathComponent];
+        NSString *filename = @"XXX unknown"; // [image.pathname lastPathComponent];
         if (filename != nil) {
             title = filename;
         }

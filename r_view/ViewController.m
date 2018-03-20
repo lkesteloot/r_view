@@ -20,6 +20,8 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    NSLog(@"ViewController:viewDidLoad");
+
     // Always use new-style scrollers that overlay the image.
     _scrollView.scrollerStyle = NSScrollerStyleOverlay;
 
@@ -32,6 +34,7 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 - (void)setImage:(Image *)image {
+    NSLog(@"setImage: %@", image);
     _image = image;
     _imageView.image = image;
     _imageView.frame = CGRectMake(0, 0, image.width, image.height);

@@ -19,109 +19,178 @@
 
 @implementation Image
 
-- (id)initFromData:(NSData *)data andPathname:(NSString *)pathname {
-    self = [super init];
+// For NSDocument:
+- (BOOL)readFromData:(NSData *)data
+              ofType:(NSString *)typeName
+               error:(NSError **)outError {
 
-    if (self) {
-        _pathname = pathname;
+    NSImage *nsImage = [[NSImage alloc] initWithData:data];
+    NSLog(@"Image: %@", nsImage);
 
-        NSImage *nsImage = [[NSImage alloc] initWithData:data];
-        NSLog(@"Image: %@", nsImage);
+    _nsImage = nsImage;
 
-        _nsImage = nsImage;
+    // First, grab the raw pixels before we draw this image. As soon as an image is
+    // drawn, its internal representation is changed to match the display and the
+    // original data is lost.
+    NSImageRep *rep = [nsImage.representations objectAtIndex:0];
+    _width = (int) rep.pixelsWide;
+    _height = (int) rep.pixelsHigh;
 
-        // First, grab the raw pixels before we draw this image. As soon as an image is
-        // drawn, its internal representation is changed to match the display and the
-        // original data is lost.
-        NSImageRep *rep = [nsImage.representations objectAtIndex:0];
-        _width = (int) rep.pixelsWide;
-        _height = (int) rep.pixelsHigh;
-
-        if (![rep isKindOfClass:[NSBitmapImageRep class]]) {
-            NSLog(@"Representation isn't bitmap: %@", rep);
-            return nil;
+    if (![rep isKindOfClass:[NSBitmapImageRep class]]) {
+        NSLog(@"Representation isn't bitmap: %@", rep);
+        if (outError != nil) {
+            // See /System/Library/Frameworks/Foundation.framework/Versions/C/Headers/FoundationErrors.h
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
+        return NO;
+    }
 
-        NSBitmapImageRep *bitmapRep = (NSBitmapImageRep *) rep;
+    NSBitmapImageRep *bitmapRep = (NSBitmapImageRep *) rep;
 
-        // Make sure we handle this format.
-        if ((bitmapRep.bitmapFormat & NSAlphaFirstBitmapFormat) != 0) {
-            NSLog(@"We do not handle alpha-first formats");
-            return nil;
+    // Make sure we handle this format.
+    if ((bitmapRep.bitmapFormat & NSAlphaFirstBitmapFormat) != 0) {
+        NSLog(@"We do not handle alpha-first formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if ((bitmapRep.bitmapFormat & NSFloatingPointSamplesBitmapFormat) != 0) {
-            NSLog(@"We do not handle floating point formats");
-            return nil;
+        return NO;
+    }
+    if ((bitmapRep.bitmapFormat & NSFloatingPointSamplesBitmapFormat) != 0) {
+        NSLog(@"We do not handle floating point formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if ((bitmapRep.bitmapFormat & (NS16BitLittleEndianBitmapFormat|NS16BitBigEndianBitmapFormat)) != 0) {
-            NSLog(@"We do not handle 16-bit formats");
-            return nil;
+        return NO;
+    }
+    if ((bitmapRep.bitmapFormat & (NS16BitLittleEndianBitmapFormat|NS16BitBigEndianBitmapFormat)) != 0) {
+        NSLog(@"We do not handle 16-bit formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if ((bitmapRep.bitmapFormat & (NS32BitLittleEndianBitmapFormat|NS32BitBigEndianBitmapFormat)) != 0) {
-            NSLog(@"We do not handle 32-bit formats");
-            return nil;
+        return NO;
+    }
+    if ((bitmapRep.bitmapFormat & (NS32BitLittleEndianBitmapFormat|NS32BitBigEndianBitmapFormat)) != 0) {
+        NSLog(@"We do not handle 32-bit formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if (bitmapRep.bitsPerSample != 8) {
-            NSLog(@"We do not handle %d bits per sample", (int) bitmapRep.bitsPerSample);
-            return nil;
+        return NO;
+    }
+    if (bitmapRep.bitsPerSample != 8) {
+        NSLog(@"We do not handle %d bits per sample", (int) bitmapRep.bitsPerSample);
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if (bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
-            NSLog(@"We do not handle %d bits per pixel formats", (int) bitmapRep.bitsPerPixel);
-            return nil;
+        return NO;
+    }
+    if (bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
+        NSLog(@"We do not handle %d bits per pixel formats", (int) bitmapRep.bitsPerPixel);
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        _bytesPerPixel = (int) bitmapRep.bitsPerPixel/8;
-        if (bitmapRep.planar) {
-            NSLog(@"We do not handle planar formats");
-            return nil;
+        return NO;
+    }
+    _bytesPerPixel = (int) bitmapRep.bitsPerPixel/8;
+    if (bitmapRep.planar) {
+        NSLog(@"We do not handle planar formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        if (bitmapRep.samplesPerPixel != 3 && bitmapRep.samplesPerPixel != 4) {
-            NSLog(@"We do not handle %d components per pixel", (int) bitmapRep.samplesPerPixel);
-            return nil;
+        return NO;
+    }
+    if (bitmapRep.samplesPerPixel != 3 && bitmapRep.samplesPerPixel != 4) {
+        NSLog(@"We do not handle %d components per pixel", (int) bitmapRep.samplesPerPixel);
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
-        _stride = (int) bitmapRep.bytesPerRow;
-        if (_stride != _width*bitmapRep.bitsPerPixel/8) {
-            NSLog(@"We do not handle padded strides (%d != %d*%d/8 = %d)",
-                  _stride, _width, (int) bitmapRep.bitsPerPixel,
-                  (int) (_width*bitmapRep.bitsPerPixel/8));
-            return nil;
+        return NO;
+    }
+    _stride = (int) bitmapRep.bytesPerRow;
+    if (_stride != _width*bitmapRep.bitsPerPixel/8) {
+        NSLog(@"We do not handle padded strides (%d != %d*%d/8 = %d)",
+              _stride, _width, (int) bitmapRep.bitsPerPixel,
+              (int) (_width*bitmapRep.bitsPerPixel/8));
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
+        return NO;
+    }
 
-        _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
-        if (_alphaPremultiplied && bitmapRep.samplesPerPixel == 4) {
-            // It's not so much that we don't support them, it's that we've never tried it
-            // and don't know how we should act differently.
-            NSLog(@"We do not handle alpha premultiplied formats");
-            return nil;
+    _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
+    if (_alphaPremultiplied && bitmapRep.samplesPerPixel == 4) {
+        // It's not so much that we don't support them, it's that we've never tried it
+        // and don't know how we should act differently.
+        NSLog(@"We do not handle alpha premultiplied formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
         }
+        return NO;
+    }
 
-        // We should now be RGB or RGBA 8-bit format.
+    // We should now be RGB or RGBA 8-bit format.
 
-        NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
-              (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
-              _stride, _width);
+    NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
+          (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
+          _stride, _width);
 
-        // Copy it for safekeeping.
-        int byteCount = _stride*_height;
-        _data = (uint8_t *) malloc(byteCount);
-        memcpy(_data, bitmapRep.bitmapData, byteCount);
+    // Copy it for safekeeping.
+    int byteCount = _stride*_height;
+    _data = (uint8_t *) malloc(byteCount);
+    memcpy(_data, bitmapRep.bitmapData, byteCount);
 
-        // See if we're semi-transparent.
-        _isSemiTransparent = NO;
-        if (_bytesPerPixel == 4) {
-            for (int y = 0; y < _height && !_isSemiTransparent; y++) {
-                uint8_t *pixel = &_data[y*_stride];
-                for (int x = 0; x < _width; x++) {
-                    if (pixel[3] != 0xFF) {
-                        _isSemiTransparent = YES;
-                        break;
-                    }
-                    pixel += _bytesPerPixel;
+    // See if we're semi-transparent.
+    _isSemiTransparent = NO;
+    if (_bytesPerPixel == 4) {
+        for (int y = 0; y < _height && !_isSemiTransparent; y++) {
+            uint8_t *pixel = &_data[y*_stride];
+            for (int x = 0; x < _width; x++) {
+                if (pixel[3] != 0xFF) {
+                    _isSemiTransparent = YES;
+                    break;
                 }
+                pixel += _bytesPerPixel;
             }
         }
     }
 
-    return self;
+    return YES;
+}
+
+// For NSDocument:
++ (BOOL)autosavesInPlace {
+    // Don't want autosave. We don't save at all.
+    return NO;
+}
+
+// For NSDocument:
+- (void)makeWindowControllers {
+    NSWindowController *windowController = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"Document Window Controller"];
+    NSLog(@"makeWindowControllers: %@", windowController);
+    NSLog(@"Before = %@", windowController.document);
+    [self addWindowController:windowController];
+    NSLog(@"After = %@", windowController.document);
 }
 
 - (PickedColor *)sampleAtX:(int)x y:(int)y {

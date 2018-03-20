@@ -6,21 +6,17 @@
 //  Copyright © 2018 Team Ten. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
 #import "PickedColor.h"
 
-@interface Image : NSObject
+@interface Image : NSDocument
 
-@property (nonatomic,readonly) NSString *pathname;
 @property (nonatomic,readonly) NSImage *nsImage;
 @property (nonatomic,readonly) int width;
 @property (nonatomic,readonly) int height;
 // Has at least one non-opaque pixel:
 @property (nonatomic,readonly) BOOL isSemiTransparent;
-
-- (id)initFromData:(NSData *)data andPathname:(NSString *)pathname;
 
 // Returns nil if the point is outside the image.
 - (PickedColor *)sampleAtX:(int)x y:(int)y;

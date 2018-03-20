@@ -14,8 +14,8 @@
     self = [super initWithCoder:aDecoder];
 
     if (self) {
+        NSLog(@"ImageView:initWithCoder");
         _zoom = 1;
-
     }
 
     return self;
@@ -60,7 +60,7 @@
         if (_image.isSemiTransparent) {
             // One color.
             [[NSColor whiteColor] set];
-            [NSBezierPath fillRect:dirtyRect];
+            NSRectFill(dirtyRect);
 
             // Other color.
             [[NSColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0] set];
@@ -76,7 +76,7 @@
                 tile.origin.y = rect.origin.y + y;
                 for (int x = x1 + (indented ? tileSize : 0); x <= x2; x += tileSize*2) {
                     tile.origin.x = rect.origin.x + x;
-                    [NSBezierPath fillRect:CGRectIntersection(tile, rect)];
+                    NSRectFill(CGRectIntersection(tile, rect));
                 }
                 indented = !indented;
             }
