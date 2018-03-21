@@ -40,7 +40,11 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     _imageView.frame = CGRectMake(0, 0, image.width, image.height);
 }
 
-- (void)resetZoom {
+- (IBAction)zoomImageToFit:(id)sender {
+//    [self findBestZoomForSize:[self getMainWindow].frame.size];;
+}
+
+- (IBAction)zoomImageToActualSize:(id)sender {
     _imageView.zoom = 1;
     [self update];
 }
@@ -66,14 +70,14 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     [self update];
 }
 
-- (void)zoomIn {
+- (IBAction)zoomIn:(id)sender {
     if (_imageView.zoom < LARGEST_ZOOM) {
         _imageView.zoom *= 2;
         [self update];
     }
 }
 
-- (void)zoomOut {
+- (IBAction)zoomOut:(id)sender {
     if (_imageView.zoom > SMALLEST_ZOOM) {
         _imageView.zoom /= 2;
         [self update];

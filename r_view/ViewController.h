@@ -26,10 +26,7 @@
 @property (weak) IBOutlet ImageView *imageView;
 @property (nonatomic,readonly) PickedColor *pickedColor;
 
-- (void)zoomIn;
-- (void)zoomOut;
 - (void)findBestZoomForSize:(CGSize)size;
-- (void)resetZoom;
 
 @end
 

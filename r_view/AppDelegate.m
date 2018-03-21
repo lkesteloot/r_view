@@ -17,14 +17,14 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    ViewController *vc = [self getImageVc];
-    vc.delegate = self;
+    //ViewController *vc = [self getImageVc];
+    //vc.delegate = self;
 
     // Parse command-line parameters.
     NSArray *args = [[NSProcessInfo processInfo] arguments];
 
     // Skip name of command.
-    NSLog(@"Full path: %@", [args objectAtIndex:0]);
+//    NSLog(@"Full path: %@", [args objectAtIndex:0]);
 
     // The rest are filenames.
     Image *mainImage = nil;
@@ -101,22 +101,6 @@
      */
 }
 
-- (IBAction)onActualSize:(id)sender {
-    [[self getImageVc] resetZoom];
-}
-
-- (IBAction)onZoomToFit:(id)sender {
-    [[self getImageVc] findBestZoomForSize:[self getMainWindow].frame.size];;
-}
-
-- (IBAction)onZoomIn:(id)sender {
-    [[self getImageVc] zoomIn];
-}
-
-- (IBAction)onZoomOut:(id)sender {
-    [[self getImageVc] zoomOut];
-}
-
 - (IBAction)onColorCopy:(id)sender {
     ViewController *vc = [self getImageVc];
     PickedColor *pickedColor = vc.pickedColor;
@@ -138,6 +122,7 @@
 
 - (NSWindow *)getMainWindow {
     // We might not yet have a key window, so get the first window.
+    NSLog(@"Number of windows: %d", (int) [[NSApplication sharedApplication] windows].count);
     return [[[NSApplication sharedApplication] windows] objectAtIndex:0];
 }
 

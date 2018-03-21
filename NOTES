@@ -24,6 +24,7 @@ Automatic and instant reload of changed file on disk.
         Create pseudo-file, like another tab?
 Clean up menu items, including Preferences.
 Write README.md.
+If file is in git tree and is modified/staged, offer to diff.
 
 Maybe:
 
