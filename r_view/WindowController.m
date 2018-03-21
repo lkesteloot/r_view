@@ -25,6 +25,12 @@
     [self updateDocument];
 }
 
+// For NSWindowController:
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
+    ViewController *viewController = (ViewController *) self.contentViewController;
+    return [viewController windowTitleForDocumentDisplayName:displayName];
+}
+
 - (void)updateDocument {
     ViewController *viewController = (ViewController *) self.contentViewController;
     if (viewController != nil && self.document != nil) {

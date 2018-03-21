@@ -1,4 +1,20 @@
 
+Page tabs for each image.
+    Keeps tab zoom and pan in sync.
+    Easy key to swap between them (Space?).
+    See tab hotkeys in Window menu.
+        Maybe change to left and right arrow keys.
+Keep same sample XY when switching tabs. Update all colors on tabs when picking.
+If file is in git tree and is modified/staged, offer to diff.
+    Add menu items:
+        File -> Open head version
+        File -> Open staged version
+    Enable these based on git status.
+    When selected, get file, store somewhere, open with document controller.
+Auto-fit window on startup.
+Don't open windows that were open when we last closed.
+Resolve tab/window title copy.
+Add menu item to gather windows.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Handle dropping images onto UI.
@@ -6,11 +22,6 @@ Handle dropping images onto UI.
 Handle pasting an image (Command-V).
     Create new untitled image.
     Might imply saving file.
-Page tabs for each image.
-    Keeps tab zoom and pan in sync.
-    Easy key to swap between them (Space?).
-    See tab hotkeys in Window menu.
-        Maybe change to left and right arrow keys.
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Choose background: Checkerboard, black, white, gray.
 Automatic and instant reload of changed file on disk.
@@ -19,7 +30,6 @@ Automatic and instant reload of changed file on disk.
         Create pseudo-file, like another tab?
 Clean up menu items, including Preferences.
 Write README.md.
-If file is in git tree and is modified/staged, offer to diff.
 
 Maybe:
 

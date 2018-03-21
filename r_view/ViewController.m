@@ -27,7 +27,7 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 - (void)viewDidAppear {
-    [self updateWindowTitle];
+    [self update];
 }
 
 - (void)setRepresentedObject:(id)representedObject {
@@ -138,24 +138,17 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     }
 }
 
-// XXX maybe we don't need this.
+// XXX Maybe rename.
 - (void)update {
-    [self updateWindowTitle];
+    // Cause the title to refresh.
+    [self.view.window.windowController synchronizeWindowTitleWithDocumentName];
 }
 
-- (void)updateWindowTitle {
-    NSWindow *mainWindow = self.view.window;
-
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
     NSString *title = @"r_view";
 
     if (_image != nil) {
-        NSArray<NSString *> *pathComponents = _image.fileURL.pathComponents;
-        if (pathComponents.count > 0) {
-            title = [pathComponents lastObject];
-        } else {
-            // Shouldn't happen.
-            title = @"Untitled";
-        }
+        title = displayName;
 
         NSString *zoomString;
         float zoom = _imageView.zoom;
@@ -191,7 +184,7 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
         }
     }
 
-    mainWindow.title = title;
+    return title;
 }
 
 @end

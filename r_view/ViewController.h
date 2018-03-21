@@ -19,7 +19,8 @@
 @property (weak) IBOutlet ImageView *imageView;
 @property (nonatomic,readonly) PickedColor *pickedColor;
 
-- (void)findBestZoomForSize:(CGSize)size;
+// - (void)findBestZoomForSize:(CGSize)size;
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName;
 
 @end
 
