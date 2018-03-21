@@ -12,15 +12,8 @@
 #import "ImageView.h"
 #import "PickedColor.h"
 
-@protocol ViewControllerDelegate
-
-- (void)updateZoom:(float)zoom pickedColor:(PickedColor *)pickedColor;
-
-@end
-
 @interface ViewController : NSViewController
 
-@property (nonatomic) id<ViewControllerDelegate> delegate;
 @property (nonatomic) Image *image;
 @property (strong) IBOutlet NSScrollView *scrollView;
 @property (weak) IBOutlet ImageView *imageView;

@@ -20,12 +20,14 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    NSLog(@"ViewController:viewDidLoad");
-
     // Always use new-style scrollers that overlay the image.
     _scrollView.scrollerStyle = NSScrollerStyleOverlay;
 
     _imageView.delegate = self;
+}
+
+- (void)viewDidAppear {
+    [self updateWindowTitle];
 }
 
 - (void)setRepresentedObject:(id)representedObject {
@@ -34,7 +36,6 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 - (void)setImage:(Image *)image {
-    NSLog(@"setImage: %@", image);
     _image = image;
     _imageView.image = image;
     _imageView.frame = CGRectMake(0, 0, image.width, image.height);
@@ -100,8 +101,9 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     } else if (action == @selector(zoomOut:)) {
         enabled = _imageView.zoom > SMALLEST_ZOOM;
     } else {
-        // Bubble up.
-        enabled = [super validateMenuItem:menuItem];
+        // We can't bubble up (super doesn't implement this method),
+        // so return YES as per instructions ("Enabling Menu Items").
+        enabled = YES;
     }
 
     return enabled;
@@ -116,10 +118,60 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     }
 }
 
+// XXX maybe we don't need this.
 - (void)update {
-    if (_delegate != nil) {
-        [_delegate updateZoom:_imageView.zoom pickedColor:_pickedColor];
+    [self updateWindowTitle];
+}
+
+- (void)updateWindowTitle {
+    NSWindow *mainWindow = self.view.window;
+
+    NSString *title = @"r_view";
+
+    if (_image != nil) {
+        NSArray<NSString *> *pathComponents = _image.fileURL.pathComponents;
+        if (pathComponents.count > 0) {
+            title = [pathComponents lastObject];
+        } else {
+            // Shouldn't happen.
+            title = @"Untitled";
+        }
+
+        NSString *zoomString;
+        float zoom = _imageView.zoom;
+        if (zoom == 1) {
+            zoomString = nil;
+        } else {
+            int zoomNumerator;
+            int zoomDenominator;
+            if (zoom >= 1) {
+                zoomNumerator = (int) zoom;
+                zoomDenominator = 1;
+            } else {
+                zoomNumerator = 1;
+                zoomDenominator = (int) 1.0/zoom;
+            }
+            zoomString = [NSString stringWithFormat:@"zoom %d:%d", zoomNumerator, zoomDenominator];
+        }
+
+        NSString *pickedColorString = _pickedColor == nil ? nil : [_pickedColor toString];
+
+        if (zoomString != nil || pickedColorString != nil) {
+            title = [title stringByAppendingString:@" – "];
+            if (zoomString != nil) {
+                title = [title stringByAppendingString:zoomString];
+                if (pickedColorString != nil) {
+                    title = [title stringByAppendingString:@" – "];
+                }
+            }
+
+            if (pickedColorString != nil) {
+                title = [title stringByAppendingString:pickedColorString];
+            }
+        }
     }
+
+    mainWindow.title = title;
 }
 
 @end

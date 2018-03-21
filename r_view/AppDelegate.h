@@ -10,7 +10,6 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
-- (IBAction)onColorCopy:(id)sender;
 
 @end
 

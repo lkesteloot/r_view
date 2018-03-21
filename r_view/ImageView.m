@@ -14,7 +14,6 @@
     self = [super initWithCoder:aDecoder];
 
     if (self) {
-        NSLog(@"ImageView:initWithCoder");
         _zoom = 1;
     }
 

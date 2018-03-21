@@ -7,52 +7,11 @@
 //
 
 #import "AppDelegate.h"
-#import "ViewController.h"
 #import "Image.h"
-
-@interface AppDelegate () <ViewControllerDelegate>
-
-@end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    //ViewController *vc = [self getImageVc];
-    //vc.delegate = self;
-
-    // Parse command-line parameters.
-    NSArray *args = [[NSProcessInfo processInfo] arguments];
-
-    // Skip name of command.
-//    NSLog(@"Full path: %@", [args objectAtIndex:0]);
-
-    // The rest are filenames.
-    Image *mainImage = nil;
-    /*
-    for (int i = 1; i < args.count; i++) {
-        // Skip "-NSDocumentRevisionsDebugMode YES", supplied by XCode.
-        if (i + 1 < args.count &&
-            [[args objectAtIndex:i] isEqualToString:@"-NSDocumentRevisionsDebugMode"] &&
-            [[args objectAtIndex:i + 1] isEqualToString:@"YES"]) {
-
-            i += 1;
-        } else {
-            NSString *pathname = [args objectAtIndex:i];
-            NSData *data = [[NSFileManager defaultManager] contentsAtPath:pathname];
-            if (data == nil) {
-                // File doesn't exist or can't be read.
-                NSLog(@"Cannot read file %@", pathname);
-            } else {
-                Image *image = [[Image alloc] initFromData:data andPathname:pathname];
-                if (image == nil) {
-                    NSLog(@"Cannot convert image to our own type");
-                } else {
-                    [self getImageVc].image = image;
-                    mainImage = image;
-                }
-            }
-        }
-    }*/
 
     /*
     // Find the best size for our window.
@@ -97,10 +56,10 @@
         [window setFrame:windowFrameRect display:YES animate:NO];
     }
 
-    [self updateWindowTitle];
      */
 }
 
+/*
 - (IBAction)onColorCopy:(id)sender {
     ViewController *vc = [self getImageVc];
     PickedColor *pickedColor = vc.pickedColor;
@@ -119,71 +78,5 @@
         }
     }
 }
-
-- (NSWindow *)getMainWindow {
-    // We might not yet have a key window, so get the first window.
-    NSLog(@"Number of windows: %d", (int) [[NSApplication sharedApplication] windows].count);
-    return [[[NSApplication sharedApplication] windows] objectAtIndex:0];
-}
-
-- (ViewController *)getImageVc {
-    return (ViewController *) [self getMainWindow].contentViewController;
-}
-
-// ViewControllerDelegate
-- (void)updateZoom:(float)zoom pickedColor:(PickedColor *)pickedColor {
-    [self updateWindowTitle];
-}
-
-- (void)updateWindowTitle {
-    NSWindow *mainWindow = [self getMainWindow];
-    ViewController *vc = [self getImageVc];
-    Image *image = vc.image;
-
-    NSString *title = @"r_view";
-
-    if (image != nil) {
-        NSString *filename = @"XXX unknown"; // [image.pathname lastPathComponent];
-        if (filename != nil) {
-            title = filename;
-        }
-
-        NSString *zoomString;
-        float zoom = vc.imageView.zoom;
-        if (zoom == 1) {
-            zoomString = nil;
-        } else {
-            int zoomNumerator;
-            int zoomDenominator;
-            if (zoom >= 1) {
-                zoomNumerator = (int) zoom;
-                zoomDenominator = 1;
-            } else {
-                zoomNumerator = 1;
-                zoomDenominator = (int) 1.0/zoom;
-            }
-            zoomString = [NSString stringWithFormat:@"zoom %d:%d", zoomNumerator, zoomDenominator];
-        }
-
-        PickedColor *pickedColor = vc.pickedColor;
-        NSString *pickedColorString = pickedColor == nil ? nil : [pickedColor toString];
-
-        if (zoomString != nil || pickedColorString != nil) {
-            title = [title stringByAppendingString:@" – "];
-            if (zoomString != nil) {
-                title = [title stringByAppendingString:zoomString];
-                if (pickedColorString != nil) {
-                    title = [title stringByAppendingString:@" – "];
-                }
-            }
-
-            if (pickedColorString != nil) {
-                title = [title stringByAppendingString:pickedColorString];
-            }
-        }
-    }
-
-    mainWindow.title = title;
-}
-
+*/
 @end

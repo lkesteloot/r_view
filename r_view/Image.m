@@ -25,7 +25,6 @@
                error:(NSError **)outError {
 
     NSImage *nsImage = [[NSImage alloc] initWithData:data];
-    NSLog(@"Image: %@", nsImage);
 
     _nsImage = nsImage;
 
@@ -187,10 +186,7 @@
 // For NSDocument:
 - (void)makeWindowControllers {
     NSWindowController *windowController = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"Document Window Controller"];
-    NSLog(@"makeWindowControllers: %@", windowController);
-    NSLog(@"Before = %@", windowController.document);
     [self addWindowController:windowController];
-    NSLog(@"After = %@", windowController.document);
 }
 
 - (PickedColor *)sampleAtX:(int)x y:(int)y {

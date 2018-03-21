@@ -22,7 +22,6 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
 
-    NSLog(@"windowDidLoad: document = %@", self.document);
     [self updateDocument];
 }
 
