@@ -1,23 +1,18 @@
 
-Handle Command-C to copy #RRGGBB.
-    Test pasting color.
-    Disable menu item if no color is picked.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
-Zoom to Fit hotkey should include ESC.
-Handle opening a file in the Finder.
-    Probably have to register image types.
-    https://developer.apple.com/documentation/appkit/nsapplicationdelegate/1428612-application?language=objc
 Handle dropping images onto UI.
     https://developer.apple.com/documentation/appkit/nsdraggingdestination?language=objc
 Handle pasting an image (Command-V).
-Handle opening an image with File->Open.
-Page tabs for each image?
-    https://github.com/onekiloparsec/KPCTabsControl
+    Create new untitled image.
+    Might imply saving file.
+Page tabs for each image.
     Keeps tab zoom and pan in sync.
     Easy key to swap between them (Space?).
     See tab hotkeys in Window menu.
+        Maybe change to left and right arrow keys.
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
+Choose background: Checkerboard, black, white, gray.
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
     After reload, can toggle displaying current and previous.

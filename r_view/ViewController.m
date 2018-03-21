@@ -97,7 +97,8 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
         [pasteboard clearContents];
         NSArray *objectsToCopy = @[
                                    [_pickedColor toRgbString],
-                                   [_pickedColor toNsColor]   // Untested.
+                                   // I don't know how to test this, so I'm not including it.
+                                   // [_pickedColor toNsColor]
                                    ];
         BOOL success = [pasteboard writeObjects:objectsToCopy];
         if (!success) {
