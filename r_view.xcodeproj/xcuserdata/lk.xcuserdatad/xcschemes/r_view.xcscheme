@@ -68,6 +68,10 @@
             argument = "/Users/lk/mine/r_view/tst.png"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/lk/mine/r_view/tst2.png"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>

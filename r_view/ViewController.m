@@ -131,10 +131,27 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 
 // ImageViewDelegate
 - (void)userSelectedPointX:(int)x y:(int)y {
+    [self userSelectedPointX:x y:y propagate:YES];
+}
+
+- (void)userSelectedPointX:(int)x y:(int)y propagate:(BOOL)propagate {
     PickedColor *pickedColor = [_image sampleAtX:x y:y];
     if (pickedColor != nil) {
         _pickedColor = pickedColor;
         [self update];
+    }
+
+    if (propagate) {
+        // Send this pick to all other window tabs in this window.
+        for (NSWindow *window in self.view.window.tabbedWindows) {
+            if (window != self.view.window) {
+                NSViewController *vc = window.contentViewController;
+                if ([vc isKindOfClass:[ViewController class]]) {
+                    ViewController *other = (ViewController *) vc;
+                    [other userSelectedPointX:x y:y propagate:NO];
+                }
+            }
+        }
     }
 }
 
@@ -145,11 +162,9 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 - (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
-    NSString *title = @"r_view";
+    NSString *title = displayName;
 
     if (_image != nil) {
-        title = displayName;
-
         NSString *zoomString;
         float zoom = _imageView.zoom;
         if (zoom == 1) {

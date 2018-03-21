@@ -4,7 +4,6 @@ Page tabs for each image.
     Easy key to swap between them (Space?).
     See tab hotkeys in Window menu.
         Maybe change to left and right arrow keys.
-Keep same sample XY when switching tabs. Update all colors on tabs when picking.
 If file is in git tree and is modified/staged, offer to diff.
     Add menu items:
         File -> Open head version
