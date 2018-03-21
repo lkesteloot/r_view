@@ -40,15 +40,6 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     _imageView.frame = CGRectMake(0, 0, image.width, image.height);
 }
 
-- (IBAction)zoomImageToFit:(id)sender {
-//    [self findBestZoomForSize:[self getMainWindow].frame.size];;
-}
-
-- (IBAction)zoomImageToActualSize:(id)sender {
-    _imageView.zoom = 1;
-    [self update];
-}
-
 - (void)findBestZoomForSize:(CGSize)size {
     // Start with largest zoom and work backwards until it fits.
     float zoom = LARGEST_ZOOM;
@@ -70,6 +61,18 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     [self update];
 }
 
+// Magically called via first responder from menu item.
+- (IBAction)zoomImageToFit:(id)sender {
+    [self findBestZoomForSize:self.view.window.frame.size];;
+}
+
+// Magically called via first responder from menu item.
+- (IBAction)zoomImageToActualSize:(id)sender {
+    _imageView.zoom = 1;
+    [self update];
+}
+
+// Magically called via first responder from menu item.
 - (IBAction)zoomIn:(id)sender {
     if (_imageView.zoom < LARGEST_ZOOM) {
         _imageView.zoom *= 2;
@@ -77,11 +80,31 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     }
 }
 
+// Magically called via first responder from menu item.
 - (IBAction)zoomOut:(id)sender {
     if (_imageView.zoom > SMALLEST_ZOOM) {
         _imageView.zoom /= 2;
         [self update];
     }
+}
+
+// Magically called via first responder from menu item.
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+    BOOL enabled;
+
+    SEL action = menuItem.action;
+    if (action == @selector(zoomImageToActualSize:)) {
+        enabled = _imageView.zoom != 1;
+    } else if (action == @selector(zoomIn:)) {
+        enabled = _imageView.zoom < LARGEST_ZOOM;
+    } else if (action == @selector(zoomOut:)) {
+        enabled = _imageView.zoom > SMALLEST_ZOOM;
+    } else {
+        // Bubble up.
+        enabled = [super validateMenuItem:menuItem];
+    }
+
+    return enabled;
 }
 
 // ImageViewDelegate
