@@ -90,6 +90,23 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 // Magically called via first responder from menu item.
+- (IBAction)copy:(id)sender {
+    if (_pickedColor != nil) {
+        NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+
+        [pasteboard clearContents];
+        NSArray *objectsToCopy = @[
+                                   [_pickedColor toRgbString],
+                                   [_pickedColor toNsColor]   // Untested.
+                                   ];
+        BOOL success = [pasteboard writeObjects:objectsToCopy];
+        if (!success) {
+            NSLog(@"Failed to copy color to pasteboard");
+        }
+    }
+}
+
+// Magically called via first responder from menu item.
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     BOOL enabled;
 
@@ -100,6 +117,8 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
         enabled = _imageView.zoom < LARGEST_ZOOM;
     } else if (action == @selector(zoomOut:)) {
         enabled = _imageView.zoom > SMALLEST_ZOOM;
+    } else if (action == @selector(copy:)) {
+        enabled = _pickedColor != nil;
     } else {
         // We can't bubble up (super doesn't implement this method),
         // so return YES as per instructions ("Enabling Menu Items").
