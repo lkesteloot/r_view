@@ -1,15 +1,20 @@
 
+Quit app after last window closes.
 Page tabs for each image.
     Keeps tab zoom and pan in sync.
     Easy key to swap between them (Space?).
     See tab hotkeys in Window menu.
         Maybe change to left and right arrow keys.
+When keeping picker in sync across tab, maybe use relative position rather than absolute.
+    Then we can compare resized images.
 If file is in git tree and is modified/staged, offer to diff.
     Add menu items:
         File -> Open head version
         File -> Open staged version
     Enable these based on git status.
     When selected, get file, store somewhere, open with document controller.
+    To get value in index: git show :path/to/file
+    To get value in head: git show HEAD:path/to/file
 Auto-fit window on startup.
 Don't open windows that were open when we last closed.
 Resolve tab/window title copy.

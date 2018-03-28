@@ -12,6 +12,7 @@
     int _stride;
     int _bytesPerPixel;
     BOOL _alphaPremultiplied;
+    BOOL _hasAlpha;
     uint8_t *_data;
 }
 
@@ -94,7 +95,9 @@
         }
         return NO;
     }
-    if (bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
+    if (bitmapRep.bitsPerPixel != 8 && bitmapRep.bitsPerPixel != 16 &&
+        bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
+
         NSLog(@"We do not handle %d bits per pixel formats", (int) bitmapRep.bitsPerPixel);
         if (outError != nil) {
             *outError = [NSError errorWithDomain:NSCocoaErrorDomain
@@ -104,6 +107,7 @@
         return NO;
     }
     _bytesPerPixel = (int) bitmapRep.bitsPerPixel/8;
+    _hasAlpha = _bytesPerPixel == 2 || _bytesPerPixel == 4;
     if (bitmapRep.planar) {
         NSLog(@"We do not handle planar formats");
         if (outError != nil) {
@@ -113,8 +117,20 @@
         }
         return NO;
     }
-    if (bitmapRep.samplesPerPixel != 3 && bitmapRep.samplesPerPixel != 4) {
+    if (bitmapRep.samplesPerPixel != 1 && bitmapRep.samplesPerPixel != 2 &&
+        bitmapRep.samplesPerPixel != 3 && bitmapRep.samplesPerPixel != 4) {
+
         NSLog(@"We do not handle %d components per pixel", (int) bitmapRep.samplesPerPixel);
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
+        }
+        return NO;
+    }
+    // Sanity check.
+    if (_bytesPerPixel != bitmapRep.samplesPerPixel) {
+        NSLog(@"Bytes per pixel (%d) don't equal samples per pixel (%d)", _bytesPerPixel, (int) bitmapRep.samplesPerPixel);
         if (outError != nil) {
             *outError = [NSError errorWithDomain:NSCocoaErrorDomain
                                             code:NSFileReadCorruptFileError
@@ -148,7 +164,7 @@
         return NO;
     }
 
-    // We should now be RGB or RGBA 8-bit format.
+    // We should now be L, LA, RGB, or RGBA 8-bit format.
 
     NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
           (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
@@ -161,11 +177,12 @@
 
     // See if we're semi-transparent.
     _isSemiTransparent = NO;
-    if (_bytesPerPixel == 4) {
+    if (_hasAlpha) {
+        int alphaIndex = _bytesPerPixel - 1;
         for (int y = 0; y < _height && !_isSemiTransparent; y++) {
             uint8_t *pixel = &_data[y*_stride];
             for (int x = 0; x < _width; x++) {
-                if (pixel[3] != 0xFF) {
+                if (pixel[alphaIndex] != 0xFF) {
                     _isSemiTransparent = YES;
                     break;
                 }
@@ -200,11 +217,17 @@
 
     pickedColor.x = x;
     pickedColor.y = y;
-    pickedColor.red = pixel[0];
-    pickedColor.green = pixel[1];
-    pickedColor.blue = pixel[2];
-    pickedColor.alpha = _bytesPerPixel == 4 ? pixel[3] : 0xFF;
-    pickedColor.hasAlpha = _bytesPerPixel == 4;
+    if (_bytesPerPixel >= 3) {
+        pickedColor.red = pixel[0];
+        pickedColor.green = pixel[1];
+        pickedColor.blue = pixel[2];
+    } else {
+        pickedColor.red = pixel[0];
+        pickedColor.green = pixel[0];
+        pickedColor.blue = pixel[0];
+    }
+    pickedColor.alpha = _hasAlpha ? pixel[_bytesPerPixel - 1] : 0xFF;
+    pickedColor.hasAlpha = _hasAlpha;
 
     return pickedColor;
 }
