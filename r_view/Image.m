@@ -9,10 +9,12 @@
 #import "Image.h"
 
 @interface Image () {
-    int _stride;
-    int _bytesPerPixel;
-    BOOL _alphaPremultiplied;
-    BOOL _hasAlpha;
+    int _rowStride;
+    int _pixelStride;
+    int _redIndex;
+    int _greenIndex;
+    int _blueIndex;
+    int _alphaIndex; // -1 if no alpha.
     uint8_t *_data;
 }
 
@@ -48,17 +50,13 @@
     }
 
     NSBitmapImageRep *bitmapRep = (NSBitmapImageRep *) rep;
+    _rowStride = (int) bitmapRep.bytesPerRow;
+
+    NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
+          (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
+          _rowStride, _width);
 
     // Make sure we handle this format.
-    if ((bitmapRep.bitmapFormat & NSAlphaFirstBitmapFormat) != 0) {
-        NSLog(@"We do not handle alpha-first formats");
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
-    }
     if ((bitmapRep.bitmapFormat & NSFloatingPointSamplesBitmapFormat) != 0) {
         NSLog(@"We do not handle floating point formats");
         if (outError != nil) {
@@ -95,6 +93,15 @@
         }
         return NO;
     }
+    if (bitmapRep.planar) {
+        NSLog(@"We do not handle planar formats");
+        if (outError != nil) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                            code:NSFileReadCorruptFileError
+                                        userInfo:nil];
+        }
+        return NO;
+    }
     if (bitmapRep.bitsPerPixel != 8 && bitmapRep.bitsPerPixel != 16 &&
         bitmapRep.bitsPerPixel != 24 && bitmapRep.bitsPerPixel != 32) {
 
@@ -106,87 +113,81 @@
         }
         return NO;
     }
-    _bytesPerPixel = (int) bitmapRep.bitsPerPixel/8;
-    _hasAlpha = _bytesPerPixel == 2 || _bytesPerPixel == 4;
-    if (bitmapRep.planar) {
-        NSLog(@"We do not handle planar formats");
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
-    }
-    if (bitmapRep.samplesPerPixel != 1 && bitmapRep.samplesPerPixel != 2 &&
-        bitmapRep.samplesPerPixel != 3 && bitmapRep.samplesPerPixel != 4) {
+    _pixelStride = (int) bitmapRep.bitsPerPixel/8;
 
-        NSLog(@"We do not handle %d components per pixel", (int) bitmapRep.samplesPerPixel);
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
-    }
-    // Sanity check.
-    if (_bytesPerPixel != bitmapRep.samplesPerPixel) {
-        NSLog(@"Bytes per pixel (%d) don't equal samples per pixel (%d)", _bytesPerPixel, (int) bitmapRep.samplesPerPixel);
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
-    }
-    _stride = (int) bitmapRep.bytesPerRow;
-    if (_stride != _width*bitmapRep.bitsPerPixel/8) {
-        NSLog(@"We do not handle padded strides (%d != %d*%d/8 = %d)",
-              _stride, _width, (int) bitmapRep.bitsPerPixel,
-              (int) (_width*bitmapRep.bitsPerPixel/8));
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
+    // Figure out where RGB are.
+    switch (bitmapRep.samplesPerPixel) {
+        case 1:
+        case 2:
+            // Luminance image.
+            _redIndex = 0;
+            _greenIndex = 0;
+            _blueIndex = 0;
+            break;
+
+        case 3:
+        case 4:
+            // RGB image.
+            _redIndex = 0;
+            _greenIndex = 1;
+            _blueIndex = 2;
+            break;
+
+        default:
+            NSLog(@"We do not handle %d samples per pixel", (int) bitmapRep.samplesPerPixel);
+            if (outError != nil) {
+                *outError = [NSError errorWithDomain:NSCocoaErrorDomain
+                                                code:NSFileReadCorruptFileError
+                                            userInfo:nil];
+            }
+            return NO;
     }
 
-    _alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
-    if (_alphaPremultiplied && bitmapRep.samplesPerPixel == 4) {
+    // Figure out where alpha is.
+    BOOL alphaFirst = (bitmapRep.bitmapFormat & NSAlphaFirstBitmapFormat) != 0;
+    if (bitmapRep.samplesPerPixel == 2 || bitmapRep.samplesPerPixel == 4) {
+        if (alphaFirst) {
+            NSLog(@"Warning: Alpha-first formats are not tested.");
+            _alphaIndex = 0;
+            _redIndex += 1;
+            _greenIndex += 1;
+            _blueIndex += 1;
+        } else {
+            // Alpha last.
+            _alphaIndex = (int) bitmapRep.samplesPerPixel - 1;
+        }
+    } else {
+        // No alpha.
+        _alphaIndex = -1;
+    }
+    if (_rowStride != _width*_pixelStride) {
+        NSLog(@"Warning: Padded row strides are untested (%d != %d*%d = %d)",
+              _rowStride, _width, _pixelStride, _width*_pixelStride);
+    }
+
+    BOOL alphaPremultiplied = (bitmapRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat) == 0;
+    if (alphaPremultiplied && _alphaIndex >= 0) {
         // It's not so much that we don't support them, it's that we've never tried it
         // and don't know how we should act differently.
-        NSLog(@"We do not handle alpha premultiplied formats");
-        if (outError != nil) {
-            *outError = [NSError errorWithDomain:NSCocoaErrorDomain
-                                            code:NSFileReadCorruptFileError
-                                        userInfo:nil];
-        }
-        return NO;
+        NSLog(@"Warning: Alpha premultiplied formats are not tested");
     }
 
-    // We should now be L, LA, RGB, or RGBA 8-bit format.
-
-    NSLog(@"samplesPerPixel = %d, bitsPerPixel = %d, bitsPerSample = %d, stride = %d, width = %d",
-          (int) bitmapRep.samplesPerPixel, (int) bitmapRep.bitsPerPixel, (int) bitmapRep.bitsPerSample,
-          _stride, _width);
-
-    // Copy it for safekeeping.
-    int byteCount = _stride*_height;
+    // Copy image for safekeeping.
+    int byteCount = _rowStride*_height;
     _data = (uint8_t *) malloc(byteCount);
     memcpy(_data, bitmapRep.bitmapData, byteCount);
 
     // See if we're semi-transparent.
     _isSemiTransparent = NO;
-    if (_hasAlpha) {
-        int alphaIndex = _bytesPerPixel - 1;
+    if (_alphaIndex >= 0) {
         for (int y = 0; y < _height && !_isSemiTransparent; y++) {
-            uint8_t *pixel = &_data[y*_stride];
+            uint8_t *alpha = &_data[y*_rowStride] + _alphaIndex;
             for (int x = 0; x < _width; x++) {
-                if (pixel[alphaIndex] != 0xFF) {
+                if (*alpha != 0xFF) {
                     _isSemiTransparent = YES;
                     break;
                 }
-                pixel += _bytesPerPixel;
+                alpha += _pixelStride;
             }
         }
     }
@@ -211,23 +212,17 @@
         return nil;
     }
 
-    uint8_t *pixel = &_data[y*_stride + x*_bytesPerPixel];
+    uint8_t *pixel = &_data[y*_rowStride + x*_pixelStride];
 
     PickedColor *pickedColor = [[PickedColor alloc] init];
 
     pickedColor.x = x;
     pickedColor.y = y;
-    if (_bytesPerPixel >= 3) {
-        pickedColor.red = pixel[0];
-        pickedColor.green = pixel[1];
-        pickedColor.blue = pixel[2];
-    } else {
-        pickedColor.red = pixel[0];
-        pickedColor.green = pixel[0];
-        pickedColor.blue = pixel[0];
-    }
-    pickedColor.alpha = _hasAlpha ? pixel[_bytesPerPixel - 1] : 0xFF;
-    pickedColor.hasAlpha = _hasAlpha;
+    pickedColor.red = pixel[_redIndex];
+    pickedColor.green = pixel[_greenIndex];
+    pickedColor.blue = pixel[_blueIndex];
+    pickedColor.alpha = _alphaIndex >= 0 ? pixel[_alphaIndex] : 0xFF;
+    pickedColor.hasAlpha = _alphaIndex;
 
     return pickedColor;
 }
