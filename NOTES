@@ -17,6 +17,7 @@ If file is in git tree and is modified/staged, offer to diff.
     To get value in head: git show HEAD:path/to/file
 Auto-fit window on startup.
 Don't open windows that were open when we last closed.
+    Look at --fresh option of "open" command.
 Resolve tab/window title copy.
 Add menu item to gather windows.
 Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
@@ -37,3 +38,12 @@ Write README.md.
 Maybe:
 
 Allow pan more freedom, as long as center of view always has image in it.
+App opens behind other windows when run from command line.
+    That's because we're running the actual executable instead of the .app.
+        Could force ourselves to the front?
+    Running the .app (with "open r_view.app --args foo.png") works but CWD is different (/),
+        so file can't be found.
+    Running the .app this way works:
+        open -a /Users/lk/Library/Developer/Xcode/DerivedData/r_view-ahptkqnzsimafjbtutjcicnrzkyo/Build/Products/Debug/r_view.app [filenames...]
+        Except that NSLog() doesn't show.
+            So run Console.app and filter for "r_view".
