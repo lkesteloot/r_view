@@ -16,10 +16,18 @@
 
 @end
 
+typedef NS_ENUM(NSInteger, ImageViewBackground) {
+    ImageViewBackgroundCheckerboard,
+    ImageViewBackgroundBlack,
+    ImageViewBackgroundGray,
+    ImageViewBackgroundWhite
+};
+
 @interface ImageView : NSView
 
 @property (nonatomic) id<ImageViewDelegate> delegate;
 @property (nonatomic) float zoom;
+@property (nonatomic) ImageViewBackground background;
 @property (nonatomic) Image *image;
 
 - (CGRect)getZoomedImageRect;

@@ -15,6 +15,7 @@
 
     if (self) {
         _zoom = 1;
+        _background = ImageViewBackgroundCheckerboard;
     }
 
     return self;
@@ -57,27 +58,47 @@
 
         // Checkerboard background.
         if (_image.isSemiTransparent) {
-            // One color.
-            [[NSColor whiteColor] set];
-            NSRectFill(dirtyRect);
+            switch (_background) {
+                case ImageViewBackgroundCheckerboard:
+                default:
+                    // One color.
+                    [[NSColor whiteColor] set];
+                    NSRectFill(dirtyRect);
 
-            // Other color.
-            [[NSColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0] set];
-            int tileSize = 8; // Must be power of two.
-            int tileMask = tileSize - 1;
-            int x1 = (int) dirtyRect.origin.x & ~tileMask;
-            int x2 = (int) dirtyRect.origin.x + dirtyRect.size.width;
-            int y1 = (int) dirtyRect.origin.y & ~tileMask;
-            int y2 = (int) dirtyRect.origin.y + dirtyRect.size.height;
-            BOOL indented = NO;
-            CGRect tile = CGRectMake(0, 0, tileSize, tileSize);
-            for (int y = y1; y <= y2; y += tileSize) {
-                tile.origin.y = rect.origin.y + y;
-                for (int x = x1 + (indented ? tileSize : 0); x <= x2; x += tileSize*2) {
-                    tile.origin.x = rect.origin.x + x;
-                    NSRectFill(CGRectIntersection(tile, rect));
-                }
-                indented = !indented;
+                    // Other color.
+                    [[NSColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1.0] set];
+                    int tileSize = 8; // Must be power of two.
+                    int tileMask = tileSize - 1;
+                    int x1 = (int) dirtyRect.origin.x & ~tileMask;
+                    int x2 = (int) dirtyRect.origin.x + dirtyRect.size.width;
+                    int y1 = (int) dirtyRect.origin.y & ~tileMask;
+                    int y2 = (int) dirtyRect.origin.y + dirtyRect.size.height;
+                    BOOL indented = NO;
+                    CGRect tile = CGRectMake(0, 0, tileSize, tileSize);
+                    for (int y = y1; y <= y2; y += tileSize) {
+                        tile.origin.y = rect.origin.y + y;
+                        for (int x = x1 + (indented ? tileSize : 0); x <= x2; x += tileSize*2) {
+                            tile.origin.x = rect.origin.x + x;
+                            NSRectFill(CGRectIntersection(tile, rect));
+                        }
+                        indented = !indented;
+                    }
+                    break;
+
+                case ImageViewBackgroundBlack:
+                    [[NSColor blackColor] set];
+                    NSRectFill(dirtyRect);
+                    break;
+
+                case ImageViewBackgroundGray:
+                    [[NSColor grayColor] set];
+                    NSRectFill(dirtyRect);
+                    break;
+
+                case ImageViewBackgroundWhite:
+                    [[NSColor whiteColor] set];
+                    NSRectFill(dirtyRect);
+                    break;
             }
         }
 
@@ -165,6 +186,11 @@
     // Scroll there.
     [self scrollPoint:newViewOrigin];
 
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setBackground:(ImageViewBackground)background {
+    _background = background;
     [self setNeedsDisplay:YES];
 }
 

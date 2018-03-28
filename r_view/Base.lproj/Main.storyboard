@@ -187,6 +187,38 @@
                                                 <action selector="zoomOut:" target="Ady-hI-5gd" id="rVe-Xw-Ab8"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Co1-Fd-qjv"/>
+                                        <menuItem title="Background" id="97U-Kk-7um">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Background" id="t5r-xu-RHW">
+                                                <items>
+                                                    <menuItem title="Checkerboard" id="YWM-ws-TAb">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="backgroundCheckerboard:" target="Ady-hI-5gd" id="SH8-0G-s2L"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Black" id="wW1-rz-fyX">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="backgroundBlack:" target="Ady-hI-5gd" id="bxq-PP-UAn"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Gray" id="zKA-2G-1J2">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="backgroundGray:" target="Ady-hI-5gd" id="u05-g3-8V6"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="White" id="PAK-fM-Ds9">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="backgroundWhite:" target="Ady-hI-5gd" id="Tjm-Zw-Kv8"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="IHs-NG-qe0"/>
                                         <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>

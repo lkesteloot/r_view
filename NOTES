@@ -27,7 +27,6 @@ Handle pasting an image (Command-V).
     Create new untitled image.
     Might imply saving file.
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
-Choose background: Checkerboard, black, white, gray.
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
     After reload, can toggle displaying current and previous.

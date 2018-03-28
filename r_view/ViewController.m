@@ -90,6 +90,26 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
 }
 
 // Magically called via first responder from menu item.
+- (IBAction)backgroundCheckerboard:(id)sender {
+    _imageView.background = ImageViewBackgroundCheckerboard;
+}
+
+// Magically called via first responder from menu item.
+- (IBAction)backgroundBlack:(id)sender {
+    _imageView.background = ImageViewBackgroundBlack;
+}
+
+// Magically called via first responder from menu item.
+- (IBAction)backgroundGray:(id)sender {
+    _imageView.background = ImageViewBackgroundGray;
+}
+
+// Magically called via first responder from menu item.
+- (IBAction)backgroundWhite:(id)sender {
+    _imageView.background = ImageViewBackgroundWhite;
+}
+
+// Magically called via first responder from menu item.
 - (IBAction)copy:(id)sender {
     if (_pickedColor != nil) {
         NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
@@ -120,6 +140,22 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
         enabled = _imageView.zoom > SMALLEST_ZOOM;
     } else if (action == @selector(copy:)) {
         enabled = _pickedColor != nil;
+    } else if (action == @selector(backgroundCheckerboard:)) {
+        enabled = _image.isSemiTransparent;
+        menuItem.state = _imageView.background == ImageViewBackgroundCheckerboard
+            ? NSControlStateValueOn : NSControlStateValueOff;
+    } else if (action == @selector(backgroundBlack:)) {
+        enabled = _image.isSemiTransparent;
+        menuItem.state = _imageView.background == ImageViewBackgroundBlack
+            ? NSControlStateValueOn : NSControlStateValueOff;
+    } else if (action == @selector(backgroundGray:)) {
+        enabled = _image.isSemiTransparent;
+        menuItem.state = _imageView.background == ImageViewBackgroundGray
+            ? NSControlStateValueOn : NSControlStateValueOff;
+    } else if (action == @selector(backgroundWhite:)) {
+        enabled = _image.isSemiTransparent;
+        menuItem.state = _imageView.background == ImageViewBackgroundWhite
+            ? NSControlStateValueOn : NSControlStateValueOff;
     } else {
         // We can't bubble up (super doesn't implement this method),
         // so return YES as per instructions ("Enabling Menu Items").
