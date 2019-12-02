@@ -127,6 +127,28 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
     }
 }
 
+// Called by File->New.
+- (IBAction)newDocument:(id)sender {
+    // Create new image from pasteboard.
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    NSArray *classArray = [NSArray arrayWithObject:[NSImage class]];
+    NSDictionary *options = [NSDictionary dictionary];
+    BOOL pasteboardHasImage = [pasteboard canReadObjectForClasses:classArray options:options];
+    if (pasteboardHasImage) {
+        // Make a document from the pasteboard.
+        NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
+        NSImage *nsImage = [objectsToPaste objectAtIndex:0];
+        Image *image = [[Image alloc] initWithImage:nsImage];
+        
+        // Add it to the list of documents we're managing.
+        [[NSDocumentController sharedDocumentController] addDocument:image];
+        
+        // Show it.
+        [image makeWindowControllers];
+        [image showWindows];
+    }
+}
+
 // Magically called via first responder from menu item.
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     BOOL enabled;
@@ -156,6 +178,12 @@ static float SMALLEST_ZOOM = 0.0625;    // 1:16
         enabled = _image.isSemiTransparent;
         menuItem.state = _imageView.background == ImageViewBackgroundWhite
             ? NSControlStateValueOn : NSControlStateValueOff;
+    } else if (action == @selector(newDocument:)) {
+        // See if the pasteboard has an image.
+        NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+        NSArray *classArray = [NSArray arrayWithObject:[NSImage class]];
+        NSDictionary *options = [NSDictionary dictionary];
+        enabled = [pasteboard canReadObjectForClasses:classArray options:options];
     } else {
         // We can't bubble up (super doesn't implement this method),
         // so return YES as per instructions ("Enabling Menu Items").

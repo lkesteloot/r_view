@@ -22,13 +22,25 @@
 
 @implementation Image
 
+- (instancetype)initWithImage:(NSImage *)image {
+    self = [super init];
+    // We don't handle errors from this function. Not sure what we'd do.
+    // We're not permitted to return nil. Maybe store the error and have
+    // a separate getting to figure it out.
+    [self configureFromImage:image error:nil];
+    return self;
+}
+
 // For NSDocument:
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
                error:(NSError **)outError {
 
     NSImage *nsImage = [[NSImage alloc] initWithData:data];
+    return [self configureFromImage:nsImage error:outError];
+}
 
+- (BOOL)configureFromImage:(NSImage *)nsImage error:(NSError **)outError {
     _nsImage = nsImage;
 
     // First, grab the raw pixels before we draw this image. As soon as an image is
