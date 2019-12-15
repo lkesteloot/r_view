@@ -9,5 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 int main(int argc, const char * argv[]) {
+    // NSLog(@"Executable: %s", argv[0]);
     return NSApplicationMain(argc, argv);
 }
