@@ -216,6 +216,8 @@
 // For NSDocument:
 - (void)makeWindowControllers {
     NSWindowController *windowController = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"Document Window Controller"];
+    NSLog(@"windowController: %@, window: %@", windowController, windowController.window);
+    windowController.window.minSize = NSMakeSize(self.width, self.height);
     [self addWindowController:windowController];
 }
 

@@ -24,9 +24,6 @@ Zoom In hotkey should say "Option Plus" but also respond to "Option Equals".
 Zoom In hotkey should say "Option Minus" but also respond to "Options Hyphen" and "Option Underscore".
 Handle dropping images onto UI.
     https://developer.apple.com/documentation/appkit/nsdraggingdestination?language=objc
-Handle pasting an image (Command-V).
-    Create new untitled image.
-    Might imply saving file.
 Toggle alpha display: RGBA over checkerboard vs. alpha mask only (B/W).
 Automatic and instant reload of changed file on disk.
     Don't change zoom or pan.
