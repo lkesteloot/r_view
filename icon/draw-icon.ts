@@ -22,27 +22,32 @@ const SHADOW_OPACITY = 0.19;
 
 const BODY = WIDTH - MARGIN*2;
 
+// The palette from lawrence-website's new.css, in its own order, which walks
+// once around the hue wheel (99, 39, 26, 1, 293, 203) and so bands along the
+// diagonals. Neighboring squares always differ by one step, so none ever match.
+const COLORS: readonly string[] = [
+    "#79B756", // green
+    "#F2B749", // yellow
+    "#E58337", // orange
+    "#CE4946", // red
+    "#85448F", // purple
+    "#3F9BD5", // blue
+];
+
 // A grid of colored squares that runs to all four edges, so the icon fills its
 // tile the way the system icons do. The gaps show the white body through, and
 // the rounded corners cut the squares at the edge.
-const COUNT = 7;
-// The gap is a fifth of a square, which is what the icon has always used.
+//
+// One row per color, so the diagonals come out even and no color repeats within
+// a row. Six also leaves the squares big enough to survive the 32-pixel icon.
+const COUNT = COLORS.length;
+// A fifth of a square, which keeps the white lines fine enough not to compete
+// with the colors.
 const GAP_RATIO = 0.2;
 const SQUARE = BODY/(COUNT + (COUNT - 1)*GAP_RATIO);
 const GAP = SQUARE*GAP_RATIO;
 
 const BODY_COLOR = "#FFFFFF";
-
-// A rainbow, stepped along each diagonal.
-const COLORS: readonly string[] = [
-    "#C81414", // red
-    "#FF7F00", // orange
-    "#F0F000", // yellow
-    "#14C814", // green
-    "#1414FF", // blue
-    "#4B1482", // indigo
-    "#9400D3", // violet
-];
 
 // Draw the icon at its full size. Smaller icons are scaled down from this
 // master rather than drawn again at each size.
