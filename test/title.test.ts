@@ -26,17 +26,17 @@ describe("formatTitle", () => {
     });
 
     it("adds the zoom when it isn't 1:1", () => {
-        expect(formatTitle("foo.png", -1, undefined)).toBe("foo.png - zoom 1:2");
-        expect(formatTitle("foo.png", 2, undefined)).toBe("foo.png - zoom 4:1");
+        expect(formatTitle("foo.png", -1, undefined)).toBe("foo.png – zoom 1:2");
+        expect(formatTitle("foo.png", 2, undefined)).toBe("foo.png – zoom 4:1");
     });
 
     it("adds the sampled pixel", () => {
         expect(formatTitle("foo.png", -1, { x: 10, y: 20, color: TRANSLUCENT }))
-            .toBe("foo.png - zoom 1:2 - (10,20) -> (10,20,30,40) #0A141E28");
+            .toBe("foo.png – zoom 1:2 – (10,20) → (10,20,30,40) #0A141E28");
     });
 
     it("leaves alpha out of an opaque sample", () => {
         expect(formatTitle("foo.png", 0, { x: 1, y: 2, color: OPAQUE }))
-            .toBe("foo.png - (1,2) -> (10,20,30) #0A141E");
+            .toBe("foo.png – (1,2) → (10,20,30) #0A141E");
     });
 });

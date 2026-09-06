@@ -21,7 +21,7 @@ Each file on the command line opens in its own window, sized to fit the image:
 ```
 
 Run it with no arguments, or use <kbd>&#x2318;O</kbd> (File > Open), to pick
-files with a dialog. <kbd>&#x2318;V</kbd> (Edit > Paste) opens the image on the
+files with a dialog. File > Open Recent lists what you've opened before. <kbd>&#x2318;V</kbd> (Edit > Paste) opens the image on the
 clipboard in a window named "Clipboard".
 
 ## Picking colors
@@ -29,13 +29,13 @@ clipboard in a window named "Clipboard".
 Hold the mouse button down over the image. The pixel under the pointer is shown
 in the title bar:
 
-    foo.png - zoom 1:2 - (10,20) -> (10,20,30,40) #0A141E28
+    foo.png – zoom 1:2 – (10,20) → (10,20,30,40) #0A141E28
 
 That's the pixel's position in the image (not in the window), its color as
 decimal RGBA, and the same color as a CSS hex string. Alpha is left out of both
 when the pixel is opaque, so most images read as plain RGB:
 
-    foo.png - (10,20) -> (10,20,30) #0A141E
+    foo.png – (10,20) → (10,20,30) #0A141E
 
 <kbd>&#x2318;C</kbd> (Edit > Copy Color) copies the hex without the `#`, ready to
 paste into code: `0A141E28`, or `0A141E` if the pixel is opaque.
@@ -54,9 +54,13 @@ images up as well as large ones down, and is the one zoom command that leaves
 the window exactly as it is, since it's fitting the image to the window you
 already have.
 
-Zooming in never smooths: at 4:1 each image pixel is a hard-edged 4-by-4 block.
-Zooming out drops pixels rather than averaging them, so every color you see is a
-color that's really in the file.
+Zooming in never smooths: at 4:1 each image pixel is a hard-edged 4-by-4 block,
+so no color reaches the screen that isn't in the file. Zooming out has to combine
+pixels, and averages each block rather than dropping all but one of them, which
+would alias badly. The color picker reads the original image either way, so the
+color in the title bar is always a real pixel of the file rather than an average
+of several — zoomed out, the pixel you're told about and the pixel you're looking
+at won't be quite the same color.
 
 An image opens at 1:1 if it fits on the screen, and otherwise zoomed out by
 powers of two until it does. Zooming in grows the window to fit the larger image,
@@ -66,8 +70,10 @@ When the image is bigger than the window, pan with two fingers or the scrollbars
 ## Background
 
 Semi-transparent images are drawn over a background, which you choose in View >
-Background: a checkerboard (the default), black, gray, or white. The area of the
-window outside the image is always #929292, so you can tell it from the image.
+Background: a checkerboard (the default), black, gray, or white. The menu is
+grayed out for an image with no transparent pixels, since there'd be nothing for
+the background to show through. The area of the window outside the image is
+always #929292, so you can tell it from the image.
 
 # Installing
 
@@ -120,15 +126,21 @@ that the color it reports is the color in the file:
 
 Scaling is done by hand, a pixel at a time, rather than by `drawImage`. Every
 zoom is a power of two and the device pixel ratio is a whole number, so an image
-pixel always maps to a whole number of device pixels, or the other way around.
-The canvas is also kept on whole device pixels while scrolling: at a fractional
-position the compositor would resample it, which is exactly the blurring this
-program exists to avoid.
+pixel either fills a whole block of device pixels or a whole block of image
+pixels averages down to one. Shrinking happens first, in a separate pass, which
+keeps drawing to a plain block copy and keeps the checkerboard behind a
+transparent image from being blurred along with it. The canvas is also kept on
+whole device pixels while scrolling: at a fractional position the compositor
+would resample it, which is exactly the blurring this program exists to avoid.
+
+On a retina display, 1:2 needs no averaging at all — each image pixel still gets
+a device pixel of its own, so you're seeing the file at your display's full
+resolution.
 
 # Source layout
 
-- `src/core/` — the zoom ladder, the title format, and the compositor that turns
-  image pixels into screen pixels. Plain TypeScript with no dependency on
+- `src/core/` — the zoom ladder, the title format, the averaging that shrinks an
+  image, and the compositor that turns image pixels into screen pixels. Plain TypeScript with no dependency on
   Electron, and where nearly all the behavior described above lives. This is
   what the tests in `test/` cover.
 - `src/main/` — the Electron main process: the command line, the windows, and

@@ -11,7 +11,7 @@ import {
 } from "../core/background.js";
 import { IMAGE_EXTENSIONS, mimeTypeFor } from "../core/mime.js";
 import { clampZoom, fitZoom, MAX_ZOOM, MIN_ZOOM, type Size, zoomedSize } from "../core/zoom.js";
-import { type ImageMessage } from "../preload/preload.js";
+import { type ImageMessage, type LoadedMessage } from "../preload/preload.js";
 import { filenamesFromArgv } from "./commandline.js";
 
 // Matches the area around the image, so there's no white flash on open.
@@ -37,6 +37,8 @@ interface View {
     readonly filePath: string | undefined;
     // Undefined until the renderer has decoded the image.
     imageSize: Size | undefined;
+    // Whether the image has anything for the background to show through.
+    hasTransparency: boolean;
     zoom: number;
     background: Background;
     // The last color the user sampled, for Copy Color.
@@ -102,6 +104,7 @@ async function createWindow(source: {
         name: source.name,
         filePath: source.filePath,
         imageSize: undefined,
+        hasTransparency: false,
         zoom: 0,
         background: DEFAULT_BACKGROUND,
         hex: undefined,
@@ -137,13 +140,15 @@ async function createWindow(source: {
 
 // The renderer decoded the image. Now we know how big it is, so we can pick a
 // zoom, size the window to match, and finally show it.
-function onLoaded(window: BrowserWindow, imageSize: Size): void {
+function onLoaded(window: BrowserWindow, message: LoadedMessage): void {
     const view = viewFor(window);
     if (view === undefined) {
         return;
     }
 
+    const imageSize = { width: message.width, height: message.height };
     view.imageSize = imageSize;
+    view.hasTransparency = message.hasTransparency;
     view.zoom = fitZoom(imageSize, availableContentSize(window));
 
     const wanted = zoomedSize(imageSize, view.zoom);
@@ -248,6 +253,7 @@ async function openFiles(filePaths: readonly string[]): Promise<void> {
         const absolute = resolve(filePath);
         try {
             const bytes = await readFile(absolute);
+            app.addRecentDocument(absolute);
             await createWindow({ name: basename(absolute), filePath: absolute, bytes });
         } catch (error) {
             dialog.showMessageBox({
@@ -310,6 +316,10 @@ function buildMenu(): void {
             label: "File",
             submenu: [
                 { label: "Open…", accelerator: "Cmd+O", click: () => void openDialog() },
+                {
+                    role: "recentDocuments",
+                    submenu: [{ role: "clearRecentDocuments" }],
+                },
                 { type: "separator" },
                 { role: "close" },
             ],
@@ -360,11 +370,12 @@ function buildMenu(): void {
                         label: backgroundLabel(background),
                         type: "radio" as const,
                         checked: view?.background === background,
-                        enabled: view !== undefined,
+                        enabled: view?.hasTransparency === true,
                         click: withWindow((w) => setBackground(w, background)),
                     })),
                 },
                 { type: "separator" },
+                { role: "togglefullscreen" },
                 { role: "toggleDevTools" },
             ],
         },
@@ -374,10 +385,10 @@ function buildMenu(): void {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-ipcMain.on("loaded", (event, size: Size) => {
+ipcMain.on("loaded", (event, message: LoadedMessage) => {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (window !== null) {
-        onLoaded(window, size);
+        onLoaded(window, message);
     }
 });
 

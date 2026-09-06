@@ -1,5 +1,6 @@
 // Wires the window up to the viewer.
 
+import { hasTransparency } from "../core/compose.js";
 import { decodeImage } from "./decode.js";
 import { type RViewApi } from "../preload/preload.js";
 import { Viewer } from "./viewer.js";
@@ -31,7 +32,11 @@ window.rview.onImage(({ name, bytes, mimeType }) => {
         try {
             const image = await decodeImage(bytes, mimeType);
             viewer.setImage(name, image);
-            window.rview.loaded({ width: image.width, height: image.height });
+            window.rview.loaded({
+                width: image.width,
+                height: image.height,
+                hasTransparency: hasTransparency(image),
+            });
         } catch (error) {
             console.error(error);
             window.rview.failed(error instanceof Error ? error.message : String(error));

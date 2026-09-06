@@ -13,8 +13,10 @@ is smaller than the screen), in which case the image will be zoomed out (again b
 powers of two) until it fits. If the zoom is not 1:1, it will be displayed in the
 title bar, to the right of the filename ("foo.jpg - zoom 1:2"). 1:2 means zoomed
 out once from actual res, and 2:1 means zoomed in (each image pixel takes 2x2
-on the screen). When zoomed out, there should be no smoothing (i.e., the 2x2
-square should entirely be the original pixel). There is no animation when
+on the screen). When zoomed in, there should be no smoothing (i.e., the 2x2
+square should entirely be the original pixel). When zoomed out, the image should
+be nicely resampled, but the color picker still reports a pixel of the original
+image, not of the resampled one. There is no animation when
 changing zoom, it should happen instantly.
 
 When the mouse button is down, the hovered pixel's color will be displayed in

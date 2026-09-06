@@ -3,11 +3,18 @@
 
 import { type Background, DEFAULT_BACKGROUND } from "../core/background.js";
 import { compose, pixelAt, type SourceImage } from "../core/compose.js";
+import { reduce, reductionFor } from "../core/reduce.js";
 import { colorHex, formatTitle, type Sample } from "../core/title.js";
 import { zoomedSize, zoomScale } from "../core/zoom.js";
 
 export class Viewer {
     private image: SourceImage | undefined = undefined;
+    // The image shrunk for the current zoom, and by how much. Kept between
+    // frames: panning redraws constantly, and averaging the image down again
+    // every frame would be wasted work. Only a zoom -- or moving the window to
+    // a display with a different pixel ratio -- invalidates it.
+    private reduced: SourceImage | undefined = undefined;
+    private reduction = 0;
     private name = "";
     private zoom = 0;
     private background: Background = DEFAULT_BACKGROUND;
@@ -56,6 +63,8 @@ export class Viewer {
     setImage(name: string, image: SourceImage): void {
         this.name = name;
         this.image = image;
+        this.reduced = undefined;
+        this.reduction = 0;
         this.sample = undefined;
         this.onSampled(undefined);
         this.relayout();
@@ -127,6 +136,23 @@ export class Viewer {
         };
     }
 
+    // The image shrunk to suit the zoom, averaging away the pixels that don't
+    // fit on the screen. Returns the image itself when nothing has to go.
+    private imageForDisplay(ratio: number): SourceImage | undefined {
+        const image = this.image;
+        if (image === undefined) {
+            return undefined;
+        }
+
+        const reduction = reductionFor(this.zoom, ratio);
+        if (this.reduced === undefined || this.reduction !== reduction) {
+            this.reduction = reduction;
+            this.reduced = reduce(image, reduction);
+        }
+
+        return this.reduced;
+    }
+
     private requestDraw(): void {
         if (this.drawPending) {
             return;
@@ -139,7 +165,8 @@ export class Viewer {
     }
 
     private draw(): void {
-        const image = this.image;
+        const ratio = window.devicePixelRatio;
+        const image = this.imageForDisplay(ratio);
         if (image === undefined) {
             return;
         }
@@ -160,14 +187,15 @@ export class Viewer {
         // snapped to whole device pixels: a canvas at a fractional position
         // would be resampled by the compositor, which is exactly the kind of
         // blurring this program exists to avoid.
-        const ratio = window.devicePixelRatio;
         const scrollX = Math.round(this.scroller.scrollLeft*ratio);
         const scrollY = Math.round(this.scroller.scrollTop*ratio);
         this.canvas.style.transform = `translate(${scrollX/ratio}px, ${scrollY/ratio}px)`;
 
         compose({
             image,
-            zoom: this.zoom,
+            // The image has already been shrunk by this.reduction, so what's
+            // left is always a whole number of device pixels per pixel.
+            scale: zoomScale(this.zoom)*ratio*this.reduction,
             dpr: ratio,
             width,
             height,

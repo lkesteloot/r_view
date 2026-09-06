@@ -20,11 +20,19 @@ export interface ViewMessage {
     readonly background: Background;
 }
 
+// What the renderer knows about the image once it's decoded.
+export interface LoadedMessage {
+    readonly width: number;
+    readonly height: number;
+    // Whether View > Background can do anything for this image.
+    readonly hasTransparency: boolean;
+}
+
 export interface RViewApi {
     onImage(callback: (message: ImageMessage) => void): void;
     onView(callback: (message: ViewMessage) => void): void;
     // The image decoded; the main process can now pick a zoom and size the window.
-    loaded(size: { width: number; height: number }): void;
+    loaded(image: LoadedMessage): void;
     failed(message: string): void;
     // The color under the mouse, for Copy Color. Undefined before the first sample.
     sampled(hex: string | undefined): void;
@@ -37,8 +45,8 @@ const api: RViewApi = {
     onView(callback) {
         ipcRenderer.on("view", (_event, message) => callback(message));
     },
-    loaded(size) {
-        ipcRenderer.send("loaded", size);
+    loaded(image) {
+        ipcRenderer.send("loaded", image);
     },
     failed(message) {
         ipcRenderer.send("failed", message);

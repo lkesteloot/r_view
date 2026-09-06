@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { CHECKER_DARK, CHECKER_LIGHT, SURROUND } from "../src/core/background.js";
-import { compose, type ComposeRequest, pixelAt, type SourceImage }
+import { compose, type ComposeRequest, hasTransparency, pixelAt, type SourceImage }
     from "../src/core/compose.js";
+import { reductionFor } from "../src/core/reduce.js";
+import { zoomScale } from "../src/core/zoom.js";
 
 // An image whose pixels encode their own coordinates, so it's easy to tell
 // which one landed where.
@@ -23,7 +25,7 @@ function coordinateImage(width: number, height: number, alpha = 255): SourceImag
 function run(options: Partial<ComposeRequest> & { image: SourceImage; width: number; height: number }) {
     const out = new Uint8ClampedArray(options.width*options.height*4);
     compose({
-        zoom: 0,
+        scale: 1,
         dpr: 1,
         originX: 0,
         originY: 0,
@@ -48,7 +50,7 @@ describe("compose", () => {
     });
 
     it("makes each pixel a block when zoomed in", () => {
-        const at = run({ image: coordinateImage(2, 2), zoom: 2, width: 8, height: 8 });
+        const at = run({ image: coordinateImage(2, 2), scale: 4, width: 8, height: 8 });
         // Every device pixel in the top-left 4x4 block is image pixel (0,0).
         for (const [x, y] of [[0, 0], [3, 0], [0, 3], [3, 3]] as const) {
             expect(at(x, y)).toEqual([0, 0, 0, 255]);
@@ -58,24 +60,17 @@ describe("compose", () => {
     });
 
     it("treats a retina display as another factor of two", () => {
-        const at = run({ image: coordinateImage(2, 2), zoom: 0, dpr: 2, width: 4, height: 4 });
+        const at = run({ image: coordinateImage(2, 2), scale: 2, dpr: 2, width: 4, height: 4 });
         expect(at(1, 1)).toEqual([0, 0, 0, 255]);
         expect(at(2, 2)).toEqual([1, 1, 0, 255]);
     });
 
-    it("drops pixels when zoomed out, without averaging them", () => {
-        const at = run({ image: coordinateImage(8, 8), zoom: -1, width: 4, height: 4 });
-        expect(at(0, 0)).toEqual([0, 0, 0, 255]);
-        expect(at(1, 0)).toEqual([2, 0, 0, 255]);
-        expect(at(3, 3)).toEqual([6, 6, 0, 255]);
-    });
-
-    it("zooms out below one device pixel per image pixel", () => {
-        // 1:4 on a retina display is one device pixel per two image pixels.
-        const at = run({ image: coordinateImage(8, 8), zoom: -2, dpr: 2, width: 4, height: 4 });
-        expect(at(0, 0)).toEqual([0, 0, 0, 255]);
-        expect(at(1, 0)).toEqual([2, 0, 0, 255]);
-        expect(at(3, 0)).toEqual([6, 0, 0, 255]);
+    it("draws an already-shrunk image one pixel to one device pixel", () => {
+        // What the viewer asks for at every zoom out: reduce.ts has already
+        // averaged the image down, so there's nothing left to do but copy it.
+        const at = run({ image: coordinateImage(4, 4), scale: 1, width: 4, height: 4 });
+        expect(at(1, 0)).toEqual([1, 0, 0, 255]);
+        expect(at(3, 3)).toEqual([3, 3, 0, 255]);
     });
 
     it("fills the area outside the image with the surround", () => {
@@ -108,7 +103,7 @@ describe("compose", () => {
 
     it("scales the checkerboard with the display, not the zoom", () => {
         const image = coordinateImage(64, 64, 0);
-        const at = run({ image, zoom: 2, dpr: 2, width: 64, height: 64 });
+        const at = run({ image, scale: 8, dpr: 2, width: 64, height: 64 });
 
         const light = [CHECKER_LIGHT.r, CHECKER_LIGHT.g, CHECKER_LIGHT.b, 255];
         const dark = [CHECKER_DARK.r, CHECKER_DARK.g, CHECKER_DARK.b, 255];
@@ -142,6 +137,23 @@ describe("compose", () => {
     });
 });
 
+describe("hasTransparency", () => {
+    it("is false when every pixel is opaque", () => {
+        expect(hasTransparency(coordinateImage(4, 4))).toBe(false);
+    });
+
+    it("is true when any pixel isn't", () => {
+        expect(hasTransparency(coordinateImage(4, 4, 254))).toBe(true);
+        expect(hasTransparency(coordinateImage(4, 4, 0))).toBe(true);
+    });
+
+    it("notices a single transparent pixel in an otherwise opaque image", () => {
+        const image = coordinateImage(8, 8);
+        image.data[(7*8 + 7)*4 + 3] = 254;
+        expect(hasTransparency(image)).toBe(true);
+    });
+});
+
 describe("pixelAt", () => {
     const image = { width: 8, height: 8 };
 
@@ -165,20 +177,38 @@ describe("pixelAt", () => {
         expect(pixelAt(image, 0, 0, 8)).toBeUndefined();
     });
 
+    // Whenever no pixel is being averaged away, what the title bar reports has
+    // to be what's actually on the screen under the pointer.
     it("picks the pixel that compose draws in that point's first device pixel", () => {
         const source = coordinateImage(8, 8);
+        let checked = 0;
+
         for (const zoom of [-2, -1, 0, 1, 2]) {
             for (const dpr of [1, 2]) {
-                const at = run({ image: source, zoom, dpr, width: 32, height: 32 });
+                if (reductionFor(zoom, dpr) !== 1) {
+                    continue;
+                }
+                const at = run({
+                    image: source,
+                    scale: zoomScale(zoom)*dpr,
+                    dpr,
+                    width: 32,
+                    height: 32,
+                });
                 for (const point of [0, 1, 5]) {
                     const pixel = pixelAt(source, zoom, point, point);
                     if (pixel !== undefined) {
                         const device = Math.round(point*dpr);
                         expect([at(device, device)[0], at(device, device)[1]])
                             .toEqual([pixel.x, pixel.y]);
+                        checked += 1;
                     }
                 }
             }
         }
+
+        // Including the retina 1:2 case, where the image is shown at the
+        // display's own resolution and nothing is dropped.
+        expect(checked).toBeGreaterThan(10);
     });
 });

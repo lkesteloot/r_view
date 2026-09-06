@@ -1,11 +1,11 @@
-// Turns the decoded image into the exact pixels that go on the screen.
+// Turns the image into the exact pixels that go on the screen.
 //
 // We do the scaling here instead of handing the image to drawImage() because
 // this program's whole job is to not distort the image. Every zoom is a power
-// of two and the device pixel ratio is an integer, so the scale from image
-// pixels to device pixels is always a power of two: either one image pixel
-// fills a k-by-k block of device pixels, or every k-th image pixel is shown.
-// Both are exact, and neither invents a color that wasn't in the file.
+// of two and the device pixel ratio is an integer, so one image pixel always
+// fills a whole k-by-k block of device pixels: a block copy, with no filtering
+// and no color that wasn't in the image. Shrinking, where pixels genuinely have
+// to be combined, happens beforehand in reduce.ts.
 //
 // Coordinates here are device pixels unless they say "point". The image's
 // top-left corner sits at (originX, originY), which is negative when the image
@@ -23,10 +23,26 @@ export interface SourceImage {
     readonly data: Uint8ClampedArray;
 }
 
+// Whether any pixel is less than fully opaque. The background only shows
+// through such an image, so View > Background is grayed out without one.
+export function hasTransparency(image: SourceImage): boolean {
+    for (let i = 3; i < image.data.length; i += 4) {
+        if (image.data[i] !== 255) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export interface ComposeRequest {
+    // Already shrunk, if the zoom called for it. See reduce.ts.
     readonly image: SourceImage;
-    readonly zoom: number;
-    // Device pixels per point. An integer in practice (1 or 2).
+    // Device pixels per pixel of `image`. A power of two, and at least 1 for
+    // anything the viewer asks for.
+    readonly scale: number;
+    // Device pixels per point. An integer in practice (1 or 2). Only the
+    // checkerboard cares, since it's measured on the screen rather than in the
+    // image.
     readonly dpr: number;
     // The output buffer and its size, in device pixels.
     readonly width: number;
@@ -48,10 +64,8 @@ function fillSolid(out: Uint8ClampedArray, start: number, end: number, color: Rg
 }
 
 export function compose(request: ComposeRequest): void {
-    const { image, zoom, dpr, width, height, out, originX, originY, background } = request;
+    const { image, scale, dpr, width, height, out, originX, originY, background } = request;
 
-    // Device pixels per image pixel. A power of two, so the divisions below are exact.
-    const scale = zoomScale(zoom)*dpr;
     const solid = solidColor(background);
     const checkerSize = CHECKER_SIZE*dpr;
 
