@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "start": "npm run build && electron dist/main.js",
-    "app": "npm run build && electron-builder --mac --dir"
+    "app": "npm run build && electron-builder --mac --dir",
+    "icon": "node build.mjs && electron icon/make-icon.js"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

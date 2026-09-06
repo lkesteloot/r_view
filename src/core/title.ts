@@ -33,8 +33,8 @@ export function colorHex(color: Rgba): string {
     return color.a === 255 ? rgb : rgb + hex2(color.a);
 }
 
-// The original Objective-C r_view set these in type rather than ASCII, and the
-// title bar is the one place in this program with room for it.
+// Set in type rather than ASCII. The title bar is the one place in this program
+// with room for it, and the arrow reads better than "->" at a glance.
 const SEPARATOR = " – "; // en dash
 const ARROW = " → ";
 

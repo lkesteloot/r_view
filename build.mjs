@@ -22,6 +22,11 @@ const builds = [
     // Renderer: decodes the image and draws it on a canvas. No Node access.
     { ...common, entryPoints: ["src/renderer/renderer.ts"], outfile: "dist/renderer.js",
       platform: "browser", format: "iife", target: "chrome128" },
+    // The icon generator. Outside dist/ so it isn't packaged into the app.
+    { ...common, entryPoints: ["icon/make-icon.ts"], outfile: "icon/make-icon.js",
+      platform: "node", format: "cjs", external: ["electron"] },
+    { ...common, entryPoints: ["icon/draw-icon.ts"], outfile: "icon/draw-icon.js",
+      platform: "browser", format: "iife", target: "chrome128" },
 ];
 
 mkdirSync("dist", { recursive: true });

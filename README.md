@@ -103,6 +103,10 @@ Run `make`. You'll find the app in `build/mac-arm64/r_view.app`.
 Run `make check` to typecheck and run the tests, and `make run FILE=foo.png` to
 run without packaging.
 
+`icon/r_view.icns` is committed, and `make app` uses it as-is rather than
+regenerating it, so building never depends on opening a window. After changing
+`icon/draw-icon.ts`, run `make icon` and commit the new `.icns`.
+
 # Formats
 
 PNG, JPEG, GIF, WebP, AVIF, BMP and ICO, which is what Chromium can decode. The
@@ -147,7 +151,7 @@ resolution.
   the menu. It owns the zoom and the background, since it needs both to size
   windows and to check the right menu items.
 - `src/renderer/` — decodes the image and draws it.
-- `icon/` — the app icon, carried over from the original Objective-C version.
+- `icon/` — draws the app icon and packages it as an `.icns`.
 
 # License
 
