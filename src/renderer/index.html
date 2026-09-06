@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'">
+    <title>r_view</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #929292;
+        }
+        /* Scrolling is the browser's job: this gets us two-finger panning with
+           momentum and the system's overlay scrollbars for free. The canvas is
+           only as big as the viewport and is moved and redrawn together in one
+           frame, so its contents never lag behind its position. */
+        #scroller {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            overscroll-behavior: contain;
+            background: #929292;
+            cursor: crosshair;
+        }
+        #spacer {
+            position: relative;
+        }
+        #view {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="scroller"><div id="spacer"><canvas id="view"></canvas></div></div>
+    <script src="renderer.js"></script>
+</body>
+</html>

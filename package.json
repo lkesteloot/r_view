@@ -1,0 +1,40 @@
+{
+  "name": "r_view",
+  "version": "2.0.0",
+  "description": "Mac OS app to view images and pick colors out of them",
+  "license": "MIT",
+  "author": "Lawrence Kesteloot",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "npm run build && electron dist/main.js",
+    "app": "npm run build && electron-builder --mac --dir"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.teamten.r-view",
+    "productName": "r_view",
+    "directories": {
+      "output": "build",
+      "buildResources": "icon"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "identity": null,
+      "icon": "icon/r_view.icns"
+    }
+  }
+}
