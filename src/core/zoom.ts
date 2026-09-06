@@ -38,11 +38,12 @@ export function zoomedSize(image: Size, zoom: number): Size {
     };
 }
 
-// The zoom to open an image at: 1:1 if it fits in the available space, otherwise
-// zoomed out by powers of two until it does. Never zooms in, so a small image
-// opens at actual size.
-export function fitZoom(image: Size, available: Size): number {
-    let zoom = 0;
+// The largest zoom, up to maxZoom, at which the whole image fits in the
+// available space. The default ceiling of 1:1 is what opening a file wants: a
+// small image should open at actual size, not blown up to fill the screen.
+// View > Zoom to Fit passes MAX_ZOOM, since asking to fit means both ways.
+export function fitZoom(image: Size, available: Size, maxZoom = 0): number {
+    let zoom = clampZoom(maxZoom);
 
     while (zoom > MIN_ZOOM) {
         const size = zoomedSize(image, zoom);

@@ -47,7 +47,12 @@ title bar so you can go read it.
 
 <kbd>&#x2318;+</kbd> and <kbd>&#x2318;&minus;</kbd> (View > Zoom In and Zoom Out)
 change the zoom, by powers of two only, from 1:16 to 16:1. The zoom appears in
-the title bar whenever it isn't 1:1.
+the title bar whenever it isn't 1:1. <kbd>&#x2318;0</kbd> (View > Actual Size)
+goes back to 1:1, and <kbd>&#x2318;9</kbd> (View > Zoom to Fit) picks the
+largest zoom that shows the whole image in the window. Zoom to Fit scales small
+images up as well as large ones down, and is the one zoom command that leaves
+the window exactly as it is, since it's fitting the image to the window you
+already have.
 
 Zooming in never smooths: at 4:1 each image pixel is a hard-edged 4-by-4 block.
 Zooming out drops pixels rather than averaging them, so every color you see is a

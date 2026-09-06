@@ -69,4 +69,28 @@ describe("fitZoom", () => {
     it("gives up at the smallest zoom", () => {
         expect(fitZoom({ width: 1000000, height: 1000000 }, screen)).toBe(MIN_ZOOM);
     });
+
+    // View > Zoom to Fit raises the ceiling, since asking to fit means both ways.
+    describe("with a higher ceiling", () => {
+        it("zooms in until the image fills the window", () => {
+            expect(fitZoom({ width: 100, height: 100 }, screen, MAX_ZOOM)).toBe(3);
+            expect(fitZoom({ width: 500, height: 400 }, screen, MAX_ZOOM)).toBe(1);
+        });
+
+        it("stops at the largest zoom, however small the image", () => {
+            expect(fitZoom({ width: 1, height: 1 }, screen, MAX_ZOOM)).toBe(MAX_ZOOM);
+        });
+
+        it("still zooms out when the image is too big", () => {
+            expect(fitZoom({ width: 4000, height: 800 }, screen, MAX_ZOOM)).toBe(-2);
+        });
+
+        it("leaves an image that already fills the window alone", () => {
+            expect(fitZoom({ width: 1000, height: 800 }, screen, MAX_ZOOM)).toBe(0);
+        });
+
+        it("never exceeds the range, whatever ceiling it's given", () => {
+            expect(fitZoom({ width: 1, height: 1 }, screen, 99)).toBe(MAX_ZOOM);
+        });
+    });
 });

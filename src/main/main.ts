@@ -170,7 +170,9 @@ function sendView(window: BrowserWindow, view: View): void {
     window.webContents.send("view", { zoom: view.zoom, background: view.background });
 }
 
-function setZoom(window: BrowserWindow, zoom: number): void {
+// growWindow is off for Zoom to Fit, which is fitting the image to the window
+// the user has: growing that window would just undo the fit.
+function setZoom(window: BrowserWindow, zoom: number, growWindow = true): void {
     const view = viewFor(window);
     if (view === undefined || view.imageSize === undefined) {
         return;
@@ -187,7 +189,7 @@ function setZoom(window: BrowserWindow, zoom: number): void {
     const growing = zoom > view.zoom;
     view.zoom = zoom;
 
-    if (growing) {
+    if (growing && growWindow) {
         const wanted = zoomedSize(view.imageSize, zoom);
         const available = availableContentSize(window);
         const [contentWidth, contentHeight] = window.getContentSize() as [number, number];
@@ -215,6 +217,19 @@ function nudgeOnScreen(window: BrowserWindow): void {
     if (x !== bounds.x || y !== bounds.y) {
         window.setPosition(x, y);
     }
+}
+
+// The largest zoom that shows all of the image in the window as it is now.
+// Unlike opening a file, this zooms in as well, so a small image fills the
+// window rather than sitting in the middle of it.
+function zoomToFit(window: BrowserWindow): void {
+    const view = viewFor(window);
+    if (view === undefined || view.imageSize === undefined) {
+        return;
+    }
+
+    const [width, height] = window.getContentSize() as [number, number];
+    setZoom(window, fitZoom(view.imageSize, { width, height }, MAX_ZOOM), false);
 }
 
 function setBackground(window: BrowserWindow, background: Background): void {
@@ -325,6 +340,18 @@ function buildMenu(): void {
                     accelerator: "Cmd+-",
                     enabled: view !== undefined && view.zoom > MIN_ZOOM,
                     click: withWindow((w) => setZoom(w, (viewFor(w)?.zoom ?? 0) - 1)),
+                },
+                {
+                    label: "Zoom to Fit",
+                    accelerator: "Cmd+9",
+                    enabled: view !== undefined,
+                    click: withWindow(zoomToFit),
+                },
+                {
+                    label: "Actual Size",
+                    accelerator: "Cmd+0",
+                    enabled: view !== undefined && view.zoom !== 0,
+                    click: withWindow((w) => setZoom(w, 0)),
                 },
                 { type: "separator" },
                 {
