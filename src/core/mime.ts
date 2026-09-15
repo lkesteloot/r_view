@@ -14,7 +14,9 @@ const EXTENSIONS = new Map<string, string>([
     ["ico", "image/x-icon"],
 ]);
 
-// The extensions we tell the Open dialog about.
+// The extensions we tell the Open dialog about. The same formats are declared to
+// Finder, as UTIs, in package.json's build.mac.extendInfo; a test keeps the two
+// lists matched.
 export const IMAGE_EXTENSIONS: readonly string[] = [...EXTENSIONS.keys()];
 
 function startsWith(bytes: Uint8Array, offset: number, signature: readonly number[]): boolean {

@@ -1,4 +1,7 @@
-BUILD_DIR=build
+# ".noindex" keeps Spotlight out of this directory. Launch Services registers
+# any app bundle Spotlight finds, so without it every build would show up in the
+# Finder's Open With as a second r_view.
+BUILD_DIR=build.noindex
 APP=$(BUILD_DIR)/mac-arm64/r_view.app
 BINARY=$(APP)/Contents/MacOS/r_view
 ICNS=icon/r_view.icns
@@ -10,6 +13,7 @@ BINDIR ?= $(PREFIX)/bin
 APPDIR ?= $(HOME)/Applications
 INSTALLED_APP=$(APPDIR)/r_view.app
 WRAPPER=$(BINDIR)/r_view
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 
 .PHONY: app
 app: node_modules
@@ -42,6 +46,11 @@ install: app
 	  echo 'exec "$(INSTALLED_APP)/Contents/MacOS/r_view" "$$@"'; \
 	} > "$(WRAPPER)"
 	@chmod +x "$(WRAPPER)"
+	@# Tell Launch Services about the installed copy right away, so the Finder
+	@# offers it for images. Spotlight never sees the build copy (see BUILD_DIR),
+	@# but launching it directly registers it, so drop it here too.
+	@$(LSREGISTER) -f "$(INSTALLED_APP)"
+	@$(LSREGISTER) -u "$(APP)" 2>/dev/null || true
 	@echo "Installed $(INSTALLED_APP)"
 	@echo "Installed $(WRAPPER)"
 	@case ":$$PATH:" in \
@@ -51,6 +60,7 @@ install: app
 
 .PHONY: uninstall
 uninstall:
+	@$(LSREGISTER) -u "$(INSTALLED_APP)" 2>/dev/null || true
 	@rm -rf "$(INSTALLED_APP)"
 	@rm -f "$(WRAPPER)"
 	@echo "Removed $(INSTALLED_APP)"

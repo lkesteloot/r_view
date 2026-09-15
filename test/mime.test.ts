@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { mimeTypeFor, mimeTypeFromName, sniffMimeType } from "../src/core/mime.js";
+import { IMAGE_EXTENSIONS, mimeTypeFor, mimeTypeFromName, sniffMimeType }
+    from "../src/core/mime.js";
 
 function bytes(...values: (number | string)[]): Uint8Array {
     const out: number[] = [];
@@ -55,5 +57,38 @@ describe("mimeTypeFor", () => {
 
     it("falls back to the name when the bytes say nothing", () => {
         expect(mimeTypeFor("foo.png", bytes("junk"))).toBe("image/png");
+    });
+});
+
+// Finder offers r_view in Open With only for the types its Info.plist declares,
+// and those are UTIs rather than extensions. These are what macOS itself maps
+// each extension to (UTType(filenameExtension:)).
+const UTI_FOR_EXTENSION = new Map<string, string>([
+    ["png", "public.png"],
+    ["jpg", "public.jpeg"],
+    ["jpeg", "public.jpeg"],
+    ["jpe", "public.jpeg"],
+    ["gif", "com.compuserve.gif"],
+    ["webp", "org.webmproject.webp"],
+    ["avif", "public.avif"],
+    ["bmp", "com.microsoft.bmp"],
+    ["ico", "com.microsoft.ico"],
+]);
+
+describe("the document types declared to Finder", () => {
+    const packageJson = JSON.parse(
+        readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+    const declared: string[] = packageJson.build.mac.extendInfo.CFBundleDocumentTypes
+        .flatMap((type: { LSItemContentTypes: string[] }) => type.LSItemContentTypes);
+
+    it("know the UTI of every format we can open", () => {
+        for (const extension of IMAGE_EXTENSIONS) {
+            expect(UTI_FOR_EXTENSION.get(extension), extension).toBeDefined();
+        }
+    });
+
+    it("match the formats we can open, no more and no fewer", () => {
+        const wanted = new Set(IMAGE_EXTENSIONS.map((extension) => UTI_FOR_EXTENSION.get(extension)));
+        expect(new Set(declared)).toEqual(wanted);
     });
 });

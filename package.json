@@ -26,7 +26,7 @@
     "appId": "com.teamten.r-view",
     "productName": "r_view",
     "directories": {
-      "output": "build",
+      "output": "build.noindex",
       "buildResources": "icon"
     },
     "files": [
@@ -35,7 +35,25 @@
     "mac": {
       "category": "public.app-category.developer-tools",
       "identity": null,
-      "icon": "icon/r_view.icns"
+      "icon": "icon/r_view.icns",
+      "extendInfo": {
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "Image",
+            "CFBundleTypeRole": "Viewer",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": [
+              "public.png",
+              "public.jpeg",
+              "com.compuserve.gif",
+              "org.webmproject.webp",
+              "public.avif",
+              "com.microsoft.bmp",
+              "com.microsoft.ico"
+            ]
+          }
+        ]
+      }
     }
   }
 }

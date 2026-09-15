@@ -14,7 +14,7 @@ reported color merely close to the file's, it's the wrong change.
 ```sh
 make check              # tsc --noEmit and vitest
 make run FILE=foo.png   # run without packaging
-make app                # package to build/mac-arm64/r_view.app
+make app                # package to build.noindex/mac-arm64/r_view.app
 make icon               # regenerate icon/r_view.icns after editing draw-icon.ts
 make install            # ~/Applications/r_view.app + ~/.local/bin/r_view
 ```
@@ -80,7 +80,44 @@ momentum, system scrollbars): a spacer sized to the zoomed image, and a
 viewport-sized canvas whose transform and contents are updated in the *same*
 frame so they can't slide against each other.
 
+## Finder integration
+
+The app declares the image types it can show in `package.json`, under
+`build.mac.extendInfo.CFBundleDocumentTypes`, which is what puts it in the
+Finder's Open With list. Three details:
+
+- It uses `LSItemContentTypes` (UTIs), written directly. electron-builder's
+  `fileAssociations` only emits file extensions, which modern macOS doesn't
+  match on.
+- `LSHandlerRank` is `Alternate`: offered, never quietly made the default.
+  Choosing it as the default is the user's call, through Get Info.
+- A test in `mime.test.ts` fails if that list and the formats `mime.ts` can
+  decode drift apart. Adding a format means adding its UTI in both places.
+
+Files opened from the Finder arrive through `open-file`, not argv, and at launch
+they arrive before `ready`, so the queue is full by the time startup decides
+whether to show the Open dialog. Verified with a separate instance launched by
+`open -n -a build.noindex/mac-arm64/r_view.app some.jpg`: one image window, no
+Open panel.
+
+To check what the Finder would offer, ask Launch Services rather than guessing:
+`NSWorkspace.shared.urlsForApplications(toOpen: UTType.jpeg)` in a few lines of
+Swift lists every registered app that can open JPEGs, with its path.
+
 ## Things that bit me
+
+**Launch Services registers every app bundle Spotlight can see.** A fresh
+bundle in a plain `build/` became a second r_view in Open With within about 5
+seconds of being written, and came back after `lsregister -u` as soon as
+Spotlight re-indexed it. The output directory is `build.noindex` because
+Spotlight skips folders with that suffix — measured: an identical copy in a
+`.noindex` folder was never indexed or registered. That, not the unregister in
+`make install`, is what keeps Open With to one entry.
+
+**`make install` replaces the bundle under a running r_view.** The running copy
+keeps working but stays the old version until it's relaunched. Check with
+`pgrep -f Applications/r_view.app` before assuming a test ran the new build,
+and never kill that process: it's the user's.
 
 **`BrowserWindow.getFocusedWindow()` returns null whenever the app isn't
 frontmost.** Building the menu from it directly makes every item gray out and

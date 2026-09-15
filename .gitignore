@@ -1,6 +1,6 @@
 node_modules/
 dist/
-build/
+build.noindex/
 .DS_Store
 icon/*.js
 icon/*.js.map

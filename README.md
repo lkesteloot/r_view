@@ -21,7 +21,12 @@ Each file on the command line opens in its own window, sized to fit the image:
 ```
 
 Run it with no arguments, or use <kbd>&#x2318;O</kbd> (File > Open), to pick
-files with a dialog. File > Open Recent lists what you've opened before. <kbd>&#x2318;V</kbd> (Edit > Paste) opens the image on the
+files with a dialog. File > Open Recent lists what you've opened before.
+
+In the Finder, r_view is listed under Open With for every format it can show.
+It doesn't make itself the default for any of them. To have double-clicking an
+image open it here, select an image, choose File > Get Info, pick r_view under
+Open with, and click Change All. <kbd>&#x2318;V</kbd> (Edit > Paste) opens the image on the
 clipboard in a window named "Clipboard".
 
 ## Picking colors
@@ -88,6 +93,9 @@ That builds the app and installs two things:
 - `~/.local/bin/r_view`, a small script that runs it, so that `r_view foo.png`
   works from any shell. Make sure `~/.local/bin` is on your `PATH`.
 
+It also registers the installed app with Launch Services, so the Finder offers
+it for images straight away.
+
 Override the destinations to install machine-wide:
 
 ```sh
@@ -98,7 +106,9 @@ Override the destinations to install machine-wide:
 
 # Building
 
-Run `make`. You'll find the app in `build/mac-arm64/r_view.app`.
+Run `make`. You'll find the app in `build.noindex/mac-arm64/r_view.app`. The
+`.noindex` keeps Spotlight out, which in turn keeps the Finder from offering the
+build as a second copy of the app.
 
 Run `make check` to typecheck and run the tests, and `make run FILE=foo.png` to
 run without packaging.
